@@ -274,5 +274,4 @@ ALLOWED_HOSTS=localhost,127.0.0.1
 
 ---
 
-**Last Updated**: April 6, 2026
 **Project Version**: BISAG-N Document Generator (Phase 12)
