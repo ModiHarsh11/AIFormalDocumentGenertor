@@ -1,0 +1,229 @@
+{% extends "generator/base.html" %}
+{% block title %}Edit — {{ doc.serial_number }}{% endblock %}
+{% block extra_styles %}
+.field-card { border: none; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 20px; }
+.field-card .card-header { background: #f8f9fa; font-weight: 600; font-size: 13px; color: #495057; border-bottom: 1px solid #e9ecef; }
+.serial-label { font-family:monospace; background:#eef2f7; border:1px solid #c8d3e0; padding:4px 12px; border-radius:6px; font-size:13px; }
+.lang-btn { border:2px solid #dee2e6; padding:8px 20px; border-radius:6px; cursor:pointer; background:white; }
+.lang-btn.active { border-color:#2c3e50; background:#2c3e50; color:white; }
+{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:780px;">
+    <!-- Breadcrumb -->
+    <nav class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}" style="color:#2c3e50;">Dashboard</a></li>
+            <li class="breadcrumb-item active">Edit Document</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color:#2c3e50;">Edit Document Fields</h4>
+            <div class="d-flex align-items-center gap-2">
+                <span class="serial-label">{{ doc.serial_number }}</span>
+                <span class="badge" style="background:{% if doc.document_type == 'office' %}#2c3e50{% elif doc.document_type == 'circular' %}#1a5276{% else %}#145a32{% endif %};">
+                    {{ doc.type_label }}
+                </span>
+                <span class="text-muted small">Version {{ doc.version }}</span>
+            </div>
+        </div>
+        <a href="{% url 'document_view' doc.id %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-eye me-1"></i>View Current
+        </a>
+    </div>
+
+    <form method="post" action="{% url 'document_edit' doc.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Language -->
+        <div class="field-card card">
+            <div class="card-header px-3 py-2">Language / भाषा</div>
+            <div class="card-body px-3 py-3">
+                <div class="d-flex gap-3">
+                    <label class="lang-btn {% if doc.language == 'en' %}active{% endif %}">
+                        <input type="radio" name="language" value="en" {% if doc.language == 'en' %}checked{% endif %} class="d-none"> 🇬🇧 English
+                    </label>
+                    <label class="lang-btn {% if doc.language == 'hi' %}active{% endif %}">
+                        <input type="radio" name="language" value="hi" {% if doc.language == 'hi' %}checked{% endif %} class="d-none"> 🇮🇳 हिंदी (Hindi)
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date -->
+        <div class="field-card card">
+            <div class="card-header px-3 py-2"><i class="bi bi-calendar3 me-2"></i>Date / दिनांक</div>
+            <div class="card-body px-3 py-3">
+                <input type="date" name="date_raw" class="form-control" value="{{ doc.date_raw }}" style="max-width:220px;">
+                <small class="text-muted mt-1 d-block">Change the date shown on the document</small>
+            </div>
+        </div>
+
+        <!-- Reference ID (Office Order / Policy only) -->
+        {% if doc.document_type != 'circular' %}
+        <div class="field-card card">
+            <div class="card-header px-3 py-2"><i class="bi bi-hash me-2"></i>Reference / File Number</div>
+            <div class="card-body px-3 py-3">
+                <input type="text" name="reference_id" class="form-control" value="{{ doc.reference_id }}" placeholder="e.g. BISAG-N/Office Order/2026/">
+                <small class="text-muted mt-1 d-block">The reference/file number displayed on the document</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Subject (Circular / Policy only) -->
+        {% if doc.document_type != 'office' %}
+        <div class="field-card card">
+            <div class="card-header px-3 py-2"><i class="bi bi-chat-text me-2"></i>Subject / विषय</div>
+            <div class="card-body px-3 py-3">
+                <input type="text" name="subject" class="form-control" value="{{ doc.subject }}" placeholder="Document subject">
+                <small class="text-muted mt-1 d-block">Main subject line of the document</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- From Position -->
+        <div class="field-card card">
+            <div class="card-header px-3 py-2"><i class="bi bi-person-badge me-2"></i>From (Issuing Authority)</div>
+            <div class="card-body px-3 py-3">
+                <select name="from_position" class="form-select">
+                    <option value="">— Select designation —</option>
+                    {% for desig in designations %}
+                    <option value="{{ desig }}" {% if doc.from_position == desig %}selected{% endif %}>{{ desig }}</option>
+                    {% endfor %}
+                </select>
+                <small class="text-muted mt-1 d-block">Current: <strong>{{ doc.from_position|default:"None selected" }}</strong></small>
+            </div>
+        </div>
+
+        <!-- To Recipients -->
+        <div class="field-card card">
+            <div class="card-header px-3 py-2"><i class="bi bi-people me-2"></i>To (Recipients)</div>
+            <div class="card-body px-3 py-3">
+                {% if doc.document_type == 'circular' %}
+                <div class="row g-2">
+                    {% for person in people %}
+                    <div class="col-md-6">
+                        <label class="d-flex align-items-center gap-2 p-2 border rounded" style="cursor:pointer;">
+                            <input type="checkbox" name="to_data[]" value="{{ person.id }}"
+                                   {% if person.id|stringformat:"s" in doc.to_data|default:'' %}checked{% endif %}>
+                            <span>{{ person.name }}</span>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div id="toContainer">
+                    {% for pos in doc.to_data %}
+                    <div class="d-flex gap-2 mb-2">
+                        <select name="to_data[]" class="form-select">
+                            <option value="">— Select designation —</option>
+                            {% for desig in designations %}
+                            <option value="{{ desig }}" {% if pos == desig %}selected{% endif %}>{{ desig }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.parentElement.remove()">✕</button>
+                    </div>
+                    {% empty %}
+                    <div class="d-flex gap-2 mb-2">
+                        <select name="to_data[]" class="form-select">
+                            <option value="">— Select designation —</option>
+                            {% for desig in designations %}
+                            <option value="{{ desig }}">{{ desig }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.parentElement.remove()">✕</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm mt-2" onclick="addRecipient()">
+                    <i class="bi bi-plus"></i> Add Recipient
+                </button>
+                {% endif %}
+                <small class="text-muted mt-2 d-block">Current recipients: <strong>{{ doc.to_data|join:", "|default:"None" }}</strong></small>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="field-card card">
+            <div class="card-header px-3 py-2 d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-body-text me-2"></i>Document Body</span>
+                <small class="text-muted">Edit the main content of the document</small>
+            </div>
+            <div class="card-body px-3 py-3">
+                <textarea name="body" class="form-control" rows="10" style="font-family:'Times New Roman', serif; line-height:1.8;">{{ doc.body }}</textarea>
+                <div class="d-flex justify-content-between mt-2">
+                    <small class="text-muted">You can freely edit the AI-generated body text</small>
+                    <small class="text-muted" id="charCount"></small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attached PDF (Policy only) -->
+        {% if doc.document_type == 'policy' %}
+        <div class="field-card card">
+            <div class="card-header px-3 py-2"><i class="bi bi-file-earmark-pdf me-2"></i>Attached PDF (2nd page onward)</div>
+            <div class="card-body px-3 py-3">
+                {% if has_pdf %}
+                <div class="alert alert-success d-flex align-items-center gap-2 py-2 mb-3">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Currently attached: <strong>{{ current_pdf_name|default:"Policy PDF" }}</strong> — will be preserved unless you upload a new file.</span>
+                </div>
+                {% else %}
+                <div class="alert alert-warning d-flex align-items-center gap-2 py-2 mb-3">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>No PDF currently attached.</span>
+                </div>
+                {% endif %}
+                <label class="form-label fw-semibold">Upload new PDF <span class="text-muted fw-normal">(optional — replaces existing)</span></label>
+                <input type="file" name="policy_pdf" accept=".pdf" class="form-control">
+                <small class="text-muted mt-1 d-block">Leave empty to keep the previously attached PDF.</small>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-3 justify-content-end mt-2">
+            <a href="{% url 'document_view' doc.id %}" class="btn btn-outline-secondary px-4">Cancel</a>
+            <button type="submit" class="btn btn-bisag px-5 fw-semibold">
+                <i class="bi bi-check2-circle me-2"></i>Save Changes (version {{ doc.version|add:1 }})
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+// Language radio button visual
+document.querySelectorAll('input[name="language"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+        document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+        radio.closest('.lang-btn').classList.add('active');
+    });
+});
+
+// Char count for body
+const bodyArea = document.querySelector('textarea[name="body"]');
+const charCount = document.getElementById('charCount');
+if (bodyArea && charCount) {
+    const update = () => charCount.textContent = `${bodyArea.value.length} characters`;
+    bodyArea.addEventListener('input', update);
+    update();
+}
+
+{% if doc.document_type != 'circular' %}
+// Add recipient row (for office/policy types)
+function addRecipient() {
+    const container = document.getElementById('toContainer');
+    const baseSelect = container.querySelector('select');
+    const newRow = document.createElement('div');
+    newRow.className = 'd-flex gap-2 mb-2';
+    newRow.innerHTML = `<select name="to_data[]" class="form-select">
+        ${baseSelect ? baseSelect.innerHTML : ''}
+    </select>
+    <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.parentElement.remove()">✕</button>`;
+    container.appendChild(newRow);
+}
+{% endif %}
+</script>
+{% endblock %}

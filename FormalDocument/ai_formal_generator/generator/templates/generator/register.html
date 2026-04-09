@@ -1,0 +1,61 @@
+{% extends "generator/base.html" %}
+{% block title %}Register — BISAG-N{% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="card card-bisag p-4" style="max-width:520px;margin:0 auto;">
+        <div class="text-center mb-4">
+            <div style="width:60px;height:60px;background:#2c3e50;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;">
+                <i class="bi bi-person-plus-fill text-white fs-3"></i>
+            </div>
+            <h4 class="fw-bold">Create Account</h4>
+            <p class="text-muted small">Register to start generating BISAG-N documents</p>
+        </div>
+        <form method="post" action="{% url 'register' %}">
+            {% csrf_token %}
+            <div class="row g-3">
+                <div class="col-6">
+                    <label class="form-label fw-semibold">First Name</label>
+                    <input type="text" name="first_name" class="form-control" value="{{ post.first_name|default:'' }}" placeholder="First name">
+                </div>
+                <div class="col-6">
+                    <label class="form-label fw-semibold">Last Name</label>
+                    <input type="text" name="last_name" class="form-control" value="{{ post.last_name|default:'' }}" placeholder="Last name">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                    <input type="text" name="username" class="form-control" value="{{ post.username|default:'' }}" required placeholder="Choose a username">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                    <input type="email" name="email" class="form-control" value="{{ post.email|default:'' }}" required placeholder="your@email.com">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Department</label>
+                    <input type="text" name="department" class="form-control" value="{{ post.department|default:'' }}" placeholder="e.g. Geo-Spatial Applications">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Designation</label>
+                    <input type="text" name="designation" class="form-control" value="{{ post.designation|default:'' }}" placeholder="e.g. Senior Manager">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+                    <input type="password" name="password1" class="form-control" required placeholder="Minimum 8 characters">
+                </div>
+                <div class="col-12">
+                    <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
+                    <input type="password" name="password2" class="form-control" required placeholder="Re-enter password">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-bisag w-100 py-2 fw-semibold">
+                        <i class="bi bi-person-check-fill me-2"></i>Create Account
+                    </button>
+                </div>
+            </div>
+        </form>
+        <hr class="my-3">
+        <div class="text-center text-muted small">
+            Already have an account? <a href="{% url 'login' %}" class="text-decoration-none fw-semibold" style="color:#2c3e50">Sign in</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

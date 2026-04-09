@@ -1,0 +1,62 @@
+# ============================================================================
+# BISAG-N DocumentGenerator - Production Requirements
+# ============================================================================
+# Install with: pip install -r requirements-prod.txt
+# This includes all base requirements plus production-only packages
+# Use environment: DJANGO_SETTINGS_MODULE=ai_formal_generator.settings.production
+# ============================================================================
+
+# Include all base requirements
+-r requirements.txt
+
+# WSGI & Web Servers
+# ============================================================================
+gunicorn>=21.0.0               # WSGI HTTP Server (production-grade)
+whitenoise>=6.5.0              # Static file serving in production (CDN-like)
+
+# Caching (Optional but Recommended)
+# ============================================================================
+redis>=5.0.0                   # Redis client for caching/sessions
+django-redis>=5.3.0            # Django Redis backend (cache, sessions)
+
+# Error Tracking & Monitoring
+# ============================================================================
+# Uncomment as needed for your monitoring solution
+
+# Sentry - Error Tracking & Performance Monitoring
+# sentry-sdk>=1.30.0           # Error tracking and performance monitoring
+# sentry-sdk[django]>=1.30.0   # Sentry SDK with Django integration
+
+# New Relic - APM Monitoring
+# newrelic>=8.0.0              # Application performance monitoring
+
+# Datadog - Infrastructure Monitoring
+# datadog>=0.45.0              # Datadog monitoring integration
+
+# CORS Support (if needed for API)
+# ============================================================================
+# django-cors-headers>=4.2.0   # CORS headers middleware
+
+# Database Connection Pooling (Optional)
+# ============================================================================
+# psycopg2-pool is included in psycopg2>=3.0 but for psycopg2-binary:
+# pgbouncer (external tool) or django-db-connection-pooling
+
+# Async Job Processing (Optional)
+# ============================================================================
+# celery>=5.3.0                # Distributed task queue
+# celery-beat>=2.5.0           # Celery periodic task scheduler
+# django-celery-beat>=2.5.0    # Celery beat scheduler for Django
+
+# Logging & Aggregation (Optional)
+# ============================================================================
+# python-json-logger>=2.0.0    # Structured JSON logging
+# django-structlog>=7.0.0      # Structured logging for Django
+
+# Health Checks (Optional but Recommended)
+# ============================================================================
+# django-health-check>=3.17.0  # Health check endpoints for monitoring
+
+# Django Constance (Optional - for feature flags)
+# ============================================================================
+# django-constance>=2.8.0      # Dynamic Django settings

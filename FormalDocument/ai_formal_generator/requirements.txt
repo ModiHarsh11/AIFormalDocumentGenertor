@@ -1,0 +1,96 @@
+# ============================================================================
+# BISAG-N DocumentGenerator - Production Requirements
+# ============================================================================
+# Last Updated: April 6, 2026
+# Python Version: 3.9+ (Recommended: 3.11+)
+# ============================================================================
+
+# Core Web Framework
+# ============================================================================
+Django>=4.2.26,<4.3
+
+# Database & ORM
+# ============================================================================
+psycopg2-binary>=2.9.0,<3.0  # PostgreSQL adapter for Python
+
+# AI/LLM Services
+# ============================================================================
+google-genai>=1.0,<2         # Google Generative AI (Gemini) API
+langchain-core>=0.3,<0.4     # Prompt templates and chain management
+
+# Environment & Configuration
+# ============================================================================
+python-dotenv==1.0.1         # Load environment variables from .env
+
+# Document Generation - PDF & Word Processing
+# ============================================================================
+reportlab==4.2.0             # Advanced PDF generation (charts, tables)
+python-docx==1.1.2           # Create and modify Microsoft Word (.docx) documents
+weasyprint>=68.0.0           # HTML/CSS to PDF conversion with exact rendering
+pypdf>=4.0.0                 # PDF file manipulation (merge, split, encrypt)
+pdf2image==1.17.0            # Convert PDF pages to images (PNG, JPEG)
+Pillow>=10.4.0,<12           # Image processing library (resize, filter, OCR)
+
+# Frontend Forms & Styling
+# ============================================================================
+django-crispy-forms>=2.0     # Django form rendering with template packs
+crispy-bootstrap5>=2.0       # Bootstrap 5 template pack for Crispy Forms
+
+
+# ============================================================================
+# OPTIONAL DEVELOPMENT DEPENDENCIES
+# ============================================================================
+# Uncomment the following sections to install in development environments
+
+# Testing & Quality Assurance
+# ============================================================================
+# pytest>=7.4.0                  # Unit testing framework
+# pytest-django>=4.5.0           # Django integration for pytest
+# pytest-cov>=4.1.0              # Code coverage measurement
+# factory-boy>=3.3.0             # Test data factory
+# faker>=19.0.0                  # Fake data generation
+
+# Code Quality & Formatting
+# ============================================================================
+# black>=23.0.0                  # Code formatter (PEP 8)
+# flake8>=6.0.0                  # Code linter
+# pylint>=2.17.0                 # Advanced code analysis
+# isort>=5.12.0                  # Import sorting utility
+# bandit>=1.7.5                  # Security issue scanner
+
+# Development Tools
+# ============================================================================
+# django-extensions>=3.2.0       # Django helpful commands (shell_plus, etc.)
+# django-debug-toolbar>=4.0.0    # SQL query debugging in development
+# ipython>=8.0.0                 # Enhanced Python shell
+# django-stubs>=4.2.0            # Type hints for Django
+
+# ============================================================================
+# PRODUCTION DEPLOYMENT DEPENDENCIES
+# ============================================================================
+# Uncomment for production environments
+
+# WSGI & Web Servers
+# ============================================================================
+# gunicorn>=21.0.0               # WSGI HTTP Server (production)
+# whitenoise>=6.5.0              # Static file serving in production
+
+# Caching (Optional)
+# ============================================================================
+# redis>=5.0.0                   # Redis client for caching/sessions
+# django-redis>=5.3.0            # Django Redis integration
+
+# Error Tracking & Monitoring (Optional)
+# ============================================================================
+# sentry-sdk>=1.30.0             # Error tracking and performance monitoring
+# newrelic>=8.0.0                # Application performance monitoring
+# datadog>=0.45.0                # Datadog monitoring integration
+
+# CORS Support (Optional)
+# ============================================================================
+# django-cors-headers>=4.2.0     # CORS headers middleware
+
+# API Documentation (Optional)
+# ============================================================================
+# drf-spectacular>=0.26.0        # OpenAPI 3 schema generation
+# djangorestframework>=3.14.0    # REST API framework

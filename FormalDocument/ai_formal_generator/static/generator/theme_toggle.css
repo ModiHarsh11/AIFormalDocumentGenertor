@@ -1,0 +1,198 @@
+:root {
+    --color-bg: #f5f7fb;
+    --color-text: #1f2937;
+    --color-muted: #6b7280;
+    --color-placeholder: #6b7280;
+    --color-surface: #ffffff;
+    --color-surface-alt: #f8fafc;
+    --color-border: #d9e1ec;
+    --color-track: #e2e8f0;
+    --color-thumb: #ffffff;
+    --color-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="dark"] {
+    --color-bg: #000000;
+    --color-text: #f3f4f6;
+    --color-muted: #b0b0b0;
+    --color-placeholder: #f3f4f6;
+    --color-surface: #0b0b0b;
+    --color-surface-alt: #141414;
+    --color-border: #2a2a2a;
+    --color-track: #242424;
+    --color-thumb: #0a0a0a;
+    --color-shadow: 0 14px 30px rgba(0, 0, 0, 0.35);
+}
+
+html,
+body {
+    background: var(--color-bg) !important;
+    color: var(--color-text);
+    transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+.main-container,
+.order-preview,
+.circular-preview,
+.policy-preview,
+.regenerate-section {
+    background: var(--color-surface) !important;
+    color: var(--color-text) !important;
+    box-shadow: var(--color-shadow) !important;
+    transition: background-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.collapsible-section,
+.to-table th,
+.to-table td,
+.form-control,
+.form-select,
+textarea,
+.doc-type-btn,
+.collapsible-header,
+.collapsible-content.expanded,
+.to-section,
+.draft-panel,
+.draft-item,
+.btn-toggle,
+.btn-sel,
+.btn-clear-form,
+.btn-save-draft,
+.draft-history-btn,
+.btn-copy-body {
+    background: var(--color-surface-alt) !important;
+    color: var(--color-text) !important;
+    border-color: var(--color-border) !important;
+    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
+}
+
+input::placeholder,
+textarea::placeholder,
+.form-control::placeholder {
+    color: var(--color-placeholder) !important;
+    opacity: 1;
+    transition: color 0.35s ease;
+}
+
+.to-table th {
+    background-color: var(--color-surface-alt) !important;
+}
+
+.header-line,
+h1,
+.policy-title,
+.circular-title,
+.title-section,
+.ref-line,
+.date-line,
+.date-section,
+.subject-section,
+.body-section,
+.from-section,
+.to-section,
+.form-label {
+    color: var(--color-text) !important;
+    transition: color 0.35s ease;
+}
+
+.subtitle,
+.char-counter,
+.subject-counter,
+.draft-item-meta,
+.saved-draft-notice,
+.regenerate-section p {
+    color: var(--color-muted) !important;
+    transition: color 0.35s ease;
+}
+
+.action-buttons,
+.header-section {
+    border-color: var(--color-border) !important;
+}
+
+html[data-theme="dark"] .btn-toggle.active,
+html[data-theme="dark"] .doc-type-btn.active {
+    background: #d1d5db !important;
+    border-color: #d1d5db !important;
+    color: #111827 !important;
+}
+
+.theme-toggle-wrap {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9998;
+}
+
+body.offline-mode .theme-toggle-wrap {
+    top: 54px;
+}
+
+.theme-toggle {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid #9ca3af;
+    outline-offset: 3px;
+    border-radius: 999px;
+}
+
+.theme-toggle-track {
+    width: 70px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--color-border);
+    background: var(--color-track);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 4px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: background-color 0.35s ease, border-color 0.35s ease;
+}
+
+.theme-toggle-thumb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--color-thumb);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transform: translateX(0);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), background-color 0.35s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+html[data-theme="dark"] .theme-toggle-thumb {
+    transform: translateX(32px);
+}
+
+.theme-emoji {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    transform: scale(1);
+    transition: transform 0.2s ease;
+}
+
+.theme-toggle-thumb.is-switching .theme-emoji {
+    transform: scale(1.12);
+}
+
+@media print {
+    .theme-toggle-wrap {
+        display: none !important;
+    }
+}

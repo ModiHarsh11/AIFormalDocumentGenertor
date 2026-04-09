@@ -1,0 +1,214 @@
+{% extends "generator/base.html" %}
+{% block title %}Dashboard — BISAG-N{% endblock %}
+{% block extra_styles %}
+.doc-badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+.badge-office { background: #2c3e50; color: white; }
+.badge-circular { background: #1a5276; color: white; }
+.badge-policy { background: #145a32; color: white; }
+.stat-card { border:none; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.07); text-align:center; padding:20px 15px; }
+.stat-num { font-size: 2rem; font-weight: 700; }
+.action-icons a, .action-icons form button { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; border:none; cursor:pointer; }
+.serial-badge { font-family: monospace; font-size: 12px; background: #f8f9fa; border: 1px solid #dee2e6; padding: 2px 8px; border-radius: 4px; }
+{% endblock %}
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0" style="color:#2c3e50;"><i class="bi bi-grid-fill me-2"></i>My Documents</h4>
+            <small class="text-muted">Your document generation history</small>
+        </div>
+        <a href="{% url 'home' %}" class="btn btn-bisag px-4">
+            <i class="bi bi-plus-lg me-2"></i>New Document
+        </a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-2">
+            <div class="stat-card bg-white">
+                <div class="stat-num text-dark">{{ stats.total }}</div>
+                <div class="text-muted small">Total</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="stat-card bg-white">
+                <div class="stat-num" style="color:#2c3e50;">{{ stats.office }}</div>
+                <div class="text-muted small">Office Orders</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="stat-card bg-white">
+                <div class="stat-num" style="color:#1a5276;">{{ stats.circular }}</div>
+                <div class="text-muted small">Circulars</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2">
+            <div class="stat-card bg-white">
+                <div class="stat-num" style="color:#145a32;">{{ stats.policy }}</div>
+                <div class="text-muted small">Policies</div>
+            </div>
+        </div>
+        <div class="col-12 col-md-4">
+            <div class="stat-card bg-white">
+                <div class="stat-num text-warning">{{ stats.downloads }}</div>
+                <div class="text-muted small">Total Downloads</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card card-bisag p-3 mb-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold mb-1 small">Search</label>
+                <input type="text" name="q" class="form-control form-control-sm" placeholder="Serial, subject, reference…" value="{{ search_query }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold mb-1 small">Document Type</label>
+                <select name="type" class="form-select form-select-sm">
+                    <option value="">All Types</option>
+                    <option value="office" {% if doc_type_filter == 'office' %}selected{% endif %}>Office Order</option>
+                    <option value="circular" {% if doc_type_filter == 'circular' %}selected{% endif %}>Circular</option>
+                    <option value="policy" {% if doc_type_filter == 'policy' %}selected{% endif %}>Policy</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-bisag btn-sm w-100">Filter</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm w-100">Clear</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Documents Table -->
+    <div class="card card-bisag">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead style="background:#f8f9fa;">
+                    <tr>
+                        <th class="px-3 py-3" style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Serial No.</th>
+                        <th style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Type</th>
+                        <th style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Subject / Reference</th>
+                        <th style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Lang</th>
+                        <th style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Date</th>
+                        <th style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Ver.</th>
+                        <th style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">↓</th>
+                        <th class="text-center" style="font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in page_obj %}
+                    <tr>
+                        <td class="px-3"><span class="serial-badge">{{ doc.serial_number }}</span></td>
+                        <td>
+                            {% if doc.document_type == 'office' %}
+                            <span class="doc-badge badge-office">Office Order</span>
+                            {% elif doc.document_type == 'circular' %}
+                            <span class="doc-badge badge-circular">Circular</span>
+                            {% else %}
+                            <span class="doc-badge badge-policy">Policy</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="fw-semibold" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;">
+                                {{ doc.subject|default:doc.reference_id|default:"—" }}
+                            </div>
+                            {% if doc.reference_id and doc.subject %}
+                            <small class="text-muted">{{ doc.reference_id }}</small>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge bg-light text-dark border">{{ doc.language|upper }}</span></td>
+                        <td class="text-muted" style="font-size:12px;white-space:nowrap;">
+                            {{ doc.created_at|date:"d M Y" }}<br>
+                            <small>{{ doc.created_at|date:"H:i" }}</small>
+                        </td>
+                        <td class="text-muted text-center">v{{ doc.version }}</td>
+                        <td class="text-muted text-center">{{ doc.download_count }}</td>
+                        <td class="text-center px-3">
+                            <div class="action-icons d-flex justify-content-center gap-1">
+                                <!-- View -->
+                                <a href="{% url 'document_view' doc.id %}" title="View document"
+                                   style="background:#eaf4fb;color:#1a5276;" class="action-icon-btn">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <!-- Edit -->
+                                <a href="{% url 'document_edit' doc.id %}" title="Edit fields"
+                                   style="background:#fef9e7;color:#b7950b;" class="action-icon-btn">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
+                                <!-- PDF -->
+                                <a href="{% url 'download_doc_pdf' doc.id %}" title="Download PDF"
+                                   style="background:#fdedec;color:#c0392b;" class="action-icon-btn">
+                                    <i class="bi bi-file-pdf-fill"></i>
+                                </a>
+                                <!-- DOCX -->
+                                <a href="{% url 'download_doc_docx' doc.id %}" title="Download DOCX"
+                                   style="background:#eafaf1;color:#1e8449;" class="action-icon-btn">
+                                    <i class="bi bi-file-word-fill"></i>
+                                </a>
+                                <!-- Delete -->
+                                <form method="post" action="{% url 'document_delete' doc.id %}" class="d-inline"
+                                      onsubmit="return confirm('Delete {{ doc.serial_number }}? This cannot be undone.')">
+                                    {% csrf_token %}
+                                    <button type="submit" title="Delete" style="background:#fde8d8;color:#ca6f1e;" class="action-icon-btn">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                            No documents found.
+                            {% if search_query or doc_type_filter %}
+                            <a href="{% url 'dashboard' %}" class="text-decoration-none">Clear filters</a>
+                            {% else %}
+                            <a href="{% url 'home' %}" class="text-decoration-none">Generate your first document</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+            <small class="text-muted">
+                Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} documents
+            </small>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&type={{ doc_type_filter }}&q={{ search_query }}">‹</a></li>
+                    {% endif %}
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><span class="page-link" style="background:#2c3e50;border-color:#2c3e50;">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}&type={{ doc_type_filter }}&q={{ search_query }}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&type={{ doc_type_filter }}&q={{ search_query }}">›</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.action-icon-btn {
+    display:inline-flex;align-items:center;justify-content:center;
+    width:30px;height:30px;border-radius:6px;border:none;cursor:pointer;font-size:13px;text-decoration:none;
+    transition: transform 0.1s;
+}
+.action-icon-btn:hover { transform: scale(1.15); }
+</style>
+{% endblock %}

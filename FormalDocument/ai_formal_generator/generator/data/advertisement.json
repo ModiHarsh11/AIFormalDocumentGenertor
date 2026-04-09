@@ -1,0 +1,133 @@
+{
+  "header": {
+    "en": {
+      "org_name": "BHASKARACHARYA NATIONAL INSTITUTE FOR SPACE APPLICATIONS AND GEO-INFORMATICS (BISAG-N)",
+      "ministry": "MINISTRY OF ELECTRONICS AND INFORMATION TECHNOLOGY (MEITY)",
+      "government": "GOVERNMENT OF INDIA"
+    },
+    "hi": {
+      "org_name": "भास्कराचार्य राष्ट्रीय अंतरिक्ष अनुप्रयोग एवं भू-सूचना विज्ञान संस्थान (BISAG-N)",
+      "ministry": "इलेक्ट्रॉनिक्स और सूचना प्रौद्योगिकी मंत्रालय (MeitY)",
+      "government": "भारत सरकार"
+    }
+  },
+  "title": {
+    "en": "Hiring of following manpower for BISAG-N, Gandhinagar",
+    "hi": "BISAG-N, गांधीनगर के लिए निम्नलिखित जनशक्ति की भर्ती"
+  },
+  "designations": [
+    {
+      "value": "director_additional_directors",
+      "label_en": "Director & Additional Directors",
+      "label_hi": "निदेशक एवं अतिरिक्त निदेशक"
+    },
+    {
+      "value": "project_manager",
+      "label_en": "Project Manager",
+      "label_hi": "परियोजना प्रबंधक"
+    },
+    {
+      "value": "manager_it_legal_admin",
+      "label_en": "Manager (IT, Legal & Administration)",
+      "label_hi": "प्रबंधक (आईटी, कानूनी एवं प्रशासन)"
+    },
+    {
+      "value": "senior_manager",
+      "label_en": "Senior Manager",
+      "label_hi": "वरिष्ठ प्रबंधक"
+    },
+    {
+      "value": "yp1",
+      "label_en": "Young Professional-I (YP-I)",
+      "label_hi": "युवा प्रोफेशनल-I (YP-I)"
+    },
+    {
+      "value": "yp2",
+      "label_en": "Young Professional-II (YP-II)",
+      "label_hi": "युवा प्रोफेशनल-II (YP-II)"
+    },
+    {
+      "value": "management_manpower",
+      "label_en": "Management Manpower (I & II)",
+      "label_hi": "प्रबंधन जनशक्ति (I & II)"
+    },
+    {
+      "value": "gis_executive",
+      "label_en": "GIS Executive",
+      "label_hi": "GIS एक्जीक्यूटिव"
+    },
+    {
+      "value": "ui_ux_designer",
+      "label_en": "UI/UX Designer",
+      "label_hi": "UI/UX डिजाइनर"
+    },
+    {
+      "value": "internship_trainees",
+      "label_en": "Internship Trainees",
+      "label_hi": "इंटर्नशिप प्रशिक्षार्थी"
+    }
+  ],
+  "qualifications": [
+    {
+      "value": "yp1_qual",
+      "label_en": "Young Professional-I (YP-I): B.E./B.Tech (CS, IT, Civil, or related)",
+      "label_hi": "युवा प्रोफेशनल-I (YP-I): B.E./B.Tech (CS, IT, Civil, या संबंधित)"
+    },
+    {
+      "value": "yp2_qual",
+      "label_en": "Young Professional-II (YP-II): M.E./M.Tech (relevant fields)",
+      "label_hi": "युवा प्रोफेशनल-II (YP-II): M.E./M.Tech (संबंधित क्षेत्र)"
+    },
+    {
+      "value": "management_qual",
+      "label_en": "Management Manpower (I & II): B.E./B.Tech + MBA/PGDM OR Graduation + MBA with experience",
+      "label_hi": "प्रबंधन जनशक्ति (I & II): B.E./B.Tech + MBA/PGDM या स्नातक + MBA अनुभव सहित"
+    },
+    {
+      "value": "gis_qual",
+      "label_en": "GIS Executive: ITI / BCA / B.Sc IT",
+      "label_hi": "GIS एक्जीक्यूटिव: ITI / BCA / B.Sc IT"
+    },
+    {
+      "value": "intern_qual",
+      "label_en": "Internship Trainees: Final-year or recently passed B.E./B.Tech",
+      "label_hi": "इंटर्नशिप प्रशिक्षार्थी: अंतिम वर्ष या हाल में उत्तीर्ण B.E./B.Tech"
+    }
+  ],
+  "ctc_monthly": [
+    {"value": 30000, "label": "30k"},
+    {"value": 35000, "label": "35k"},
+    {"value": 40000, "label": "40k"},
+    {"value": 45000, "label": "45k"},
+    {"value": 50000, "label": "50k"}
+  ],
+  "ctc_yearly": [
+    {"value": 360000, "label": "3.6L"},
+    {"value": 420000, "label": "4.2L"},
+    {"value": 480000, "label": "4.8L"},
+    {"value": 540000, "label": "5.4L"},
+    {"value": 600000, "label": "6.0L"}
+  ],
+  "govt_benefit_text": {
+    "yes": {
+      "en": "The candidate shall be considered as Government employee. Also, he/she will be eligible for each type of allowances and facilities.",
+      "hi": "उम्मीदवार को सरकारी कर्मचारी माना जाएगा। साथ ही, वह प्रत्येक प्रकार के भत्तों और सुविधाओं के लिए पात्र होगा/होगी।"
+    },
+    "no": {
+      "en": "The candidate shall not be considered as Government employee today or in future. Also, he/she will not be eligible for any type of allowances and facilities.",
+      "hi": "उम्मीदवार को आज या भविष्य में सरकारी कर्मचारी नहीं माना जाएगा। साथ ही, वह किसी भी प्रकार के भत्तों और सुविधाओं के लिए पात्र नहीं होगा/होगी।"
+    }
+  },
+  "application_text": {
+    "en": "Interested candidates may apply on the following Email ID with updated CV & Supporting Documents (10th, 12th & Degree Marksheets, Degree Certificate, School Leaving Certificate, Experience Letter etc.). Application without supporting documents shall not be considered for further selection process.",
+    "hi": "इच्छुक उम्मीदवार अपडेटेड CV और सहायक दस्तावेजों (10वीं, 12वीं और डिग्री मार्कशीट, डिग्री प्रमाण पत्र, स्कूल छोड़ने का प्रमाण पत्र, अनुभव पत्र आदि) के साथ निम्नलिखित ईमेल आईडी पर आवेदन कर सकते हैं। सहायक दस्तावेजों के बिना आवेदन पर आगे की चयन प्रक्रिया के लिए विचार नहीं किया जाएगा।"
+  },
+  "subject_line_note": {
+    "en": "*Mention the applied position name in the mail subject line",
+    "hi": "*मेल की विषय पंक्ति में आवेदित पद का नाम उल्लेख करें"
+  },
+  "last_date_text": {
+    "en": "The last date to apply is {date}, till 12:00 PM. After scrutiny shortlisted candidates will be informed by Email/Call for further process.",
+    "hi": "आवेदन की अंतिम तिथि {date}, दोपहर 12:00 बजे तक है। जांच के बाद शॉर्टलिस्ट किए गए उम्मीदवारों को आगे की प्रक्रिया के लिए ईमेल/कॉल द्वारा सूचित किया जाएगा।"
+  }
+}

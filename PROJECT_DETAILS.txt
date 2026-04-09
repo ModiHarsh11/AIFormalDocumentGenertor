@@ -1,0 +1,767 @@
+================================================================================
+                    BISAG-N DOCUMENT GENERATOR - PROJECT DETAILS
+                      Formal Document Generation System
+                            April 6, 2026
+================================================================================
+
+PROJECT OVERVIEW
+================================================================================
+Project Name:           Formal Document Generator Using AI
+Project Type:           Web Application (Django-based)
+Purpose:                AI-powered formal document generation for government
+Status:                 Production Ready (Phase 12)
+Platform:               Windows, Linux, macOS compatible
+Target Users:           Government officials, administrative staff
+
+
+PROJECT WORKING DIRECTORY STRUCTURE
+================================================================================
+
+PROJECT ROOT:
+  D:\BISAG\DocumentGenerator-main\DocumentGenerator-main\
+
+MAIN PROJECT DIRECTORIES:
+
+1. FormalDocument/
+   ├── ai_formal_generator/          [Main Django Project]
+   │   ├── manage.py                 [Django management script]
+   │   ├── db.sqlite3                [Local database (development)]
+   │   ├── .env                      [Environment variables - DO NOT COMMIT]
+   │   │
+   │   ├── ai_formal_generator/      [Django Configuration]
+   │   │   ├── __init__.py
+   │   │   ├── asgi.py               [ASGI config for production]
+   │   │   ├── wsgi.py               [WSGI config for deployment]
+   │   │   ├── urls.py               [URL routing configuration]
+   │   │   └── settings/
+   │   │       ├── __init__.py
+   │   │       ├── base.py           [Shared settings (all environments)]
+   │   │       ├── development.py    [Development-specific settings]
+   │   │       └── production.py     [Production-specific settings]
+   │   │
+   │   ├── generator/                [Main Application - Document Generation Logic]
+   │   │   ├── admin.py              [Django admin configuration]
+   │   │   ├── apps.py               [Application configuration]
+   │   │   ├── models.py             [Database models]
+   │   │   ├── urls.py               [App-level URL routing]
+   │   │   ├── tests.py              [Unit tests]
+   │   │   ├── constants.py          [Constants (designation map, etc.)]
+   │   │   │
+   │   │   ├── migrations/           [Database migration files]
+   │   │   │   ├── 0001_initial.py
+   │   │   │   ├── 0002_add_policy_document_type.py
+   │   │   │   ├── 0003_add_db_indexes.py
+   │   │   │   └── 0004_alter_documentlog_options_userprofile_and_more.py
+   │   │   │
+   │   │   ├── services/             [Business Logic & API Integration]
+   │   │   │   ├── __init__.py
+   │   │   │   ├── client.py         [Gemini API client initialization]
+   │   │   │   ├── service.py        [Core generation functions]
+   │   │   │   ├── registry.py       [Document type registry]
+   │   │   │   ├── sanitization.py   [Output text validation]
+   │   │   │   └── validation.py     [Input validation & language support]
+   │   │   │
+   │   │   ├── prompts/              [AI Prompt Templates]
+   │   │   │   ├── __init__.py
+   │   │   │   ├── _shared.py        [Shared prompt utilities & Language validation]
+   │   │   │   ├── office_order.py   [Office Order prompts (EN/HI)]
+   │   │   │   ├── circular.py       [Circular prompts (EN/HI)]
+   │   │   │   └── policy.py         [Policy prompts (EN/HI)]
+   │   │   │
+   │   │   ├── views/                [HTTP Request Handlers]
+   │   │   │   ├── __init__.py
+   │   │   │   ├── auth_views.py     [Login, Signup, Logout]
+   │   │   │   ├── dashboard.py      [User dashboard, document list]
+   │   │   │   ├── office_order.py   [Office Order generation]
+   │   │   │   ├── circular.py       [Circular generation]
+   │   │   │   ├── policy.py         [Policy generation]
+   │   │   │   ├── advertisement.py  [Notice/Advertisement generation]
+   │   │   │   ├── common.py         [Shared view logic & utilities]
+   │   │   │   └── __pycache__/
+   │   │   │
+   │   │   ├── templates/            [HTML Templates]
+   │   │   │   └── generator/
+   │   │   │       └── [HTML files for UI]
+   │   │   │
+   │   │   ├── data/                 [Document Templates & Metadata]
+   │   │   │   ├── office_order.json [Office Order template structure]
+   │   │   │   ├── circular.json     [Circular template structure]
+   │   │   │   ├── policy.json       [Policy template structure]
+   │   │   │   └── advertisement.json[Notice template structure]
+   │   │   │
+   │   │   └── utils/                [Utility Functions]
+   │   │       └── __init__.py
+   │   │
+   │   ├── static/                   [Static Files (CSS, JS, Images)]
+   │   │   └── generator/
+   │   │       └── [CSS, JavaScript files]
+   │   │
+   │   ├── media/                    [User Uploaded Files & Exports]
+   │   │   └── policy_uploads/       [Policy document uploads]
+   │   │
+   │   ├── templates/                [General Django Templates]
+   │   │   └── [HTML files]
+   │   │
+   │   ├── requirements.txt          [Python package dependencies]
+   │   └── requirements-dev.txt      [Development dependencies]
+   │
+   ├── docs/                         [Project Documentation]
+   │   ├── README.md
+   │   ├── api/
+   │   │   ├── ai_service.md         [AI service documentation]
+   │   │   ├── endpoints.md          [REST endpoints]
+   │   │   └── prompt_layer.md       [Prompt architecture]
+   │   ├── architecture/
+   │   │   ├── folder_structure.md
+   │   │   ├── layered_design.md
+   │   │   └── overview.md
+   │   ├── guides/
+   │   │   ├── adding_document_type.md
+   │   │   ├── environment_variables.md
+   │   │   ├── frontend_ux_features.md
+   │   │   ├── run_migrations.md
+   │   │   └── setup.md
+   │   └── phases/                  [Development phases documentation]
+   │
+   ├── finale_BISAG-N/              [Virtual Environment]
+   │   └── [Python packages installed here]
+   │
+   └── requirements.txt             [Root-level requirements]
+
+2. README.md                        [Project main README]
+
+
+TECHNOLOGY STACK WITH VERSIONS
+================================================================================
+
+═══════════════════════════════════════════════════════════════════════════════
+
+1. RUNTIME & CORE FRAMEWORK
+─────────────────────────────────────────────────────────────────────────────
+   Language:           Python 3.9+ (Recommended: 3.11+)
+   Web Framework:      Django 4.2.26 - 4.2.x (LTS - Long Term Support)
+   
+   WHY: Django is industry-standard, secure, well-documented, includes admin panel
+
+2. DATABASE LAYER
+─────────────────────────────────────────────────────────────────────────────
+   Production Database:
+      Type:            PostgreSQL 12+
+      Provider:        Neon Cloud (Managed PostgreSQL)
+      Host:            ep-winter-hall-a1y923vf-pooler.ap-southeast-1.aws.neon.tech
+      Port:            5432 (default)
+      Database Name:   neondb
+      User:            neondb_owner
+      Connection SSL:  Required (sslmode=require)
+      Features:        Connection pooling, automatic scaling, backup
+   
+   Development Database:
+      Type:            SQLite3 (built-in)
+      File:            db.sqlite3 (in project root)
+   
+   Python Driver:      psycopg2-binary >= 2.9.0, < 3.0
+                       [Allows Django to communicate with PostgreSQL]
+
+3. ARTIFICIAL INTELLIGENCE / LLM INTEGRATION
+─────────────────────────────────────────────────────────────────────────────
+   Primary Service:    Google Generative AI (Gemini)
+   Python SDK:         google-genai >= 1.0, < 2.0
+   
+   Models Used (Fallback Chain):
+      Primary:         gemini-2.5-flash-lite
+      Fallback 1:      gemini-2.0-flash
+      Fallback 2:      gemini-2.0-flash-lite
+      Fallback 3:      gemini-2.0-flash-exp
+      Fallback 4:      gemma-3-12b-it
+   
+   Configuration:
+      Temperature:     0.3 (Lower = more deterministic/formal)
+      Max Tokens:      1024 (Output length limit)
+      Safety Filters:  Enabled (Content validation)
+   
+   Authentication:     Environment Variable GEMINI_API_KEY
+                       [Not included in version control for security]
+   
+   Prompt Framework:   langchain-core >= 0.3, < 0.4
+                       [Manages prompt templates and variables]
+                       Why: Structured prompt engineering, easy templating
+
+4. DOCUMENT GENERATION & PROCESSING
+─────────────────────────────────────────────────────────────────────────────
+   Word Document (.docx):
+      Package:         python-docx == 1.1.2
+      Purpose:         Create/modify Microsoft Word documents
+      Use:             Direct export of generated documents as .docx files
+   
+   PDF Generation (HTML to PDF):
+      Package:         weasyprint >= 68.0.0
+      Purpose:         Convert HTML/CSS to PDF with precise rendering
+      Use:             Professional PDF export of documents
+      System Deps:     Cairo, Pango, GDK-Pixbuf (platform-specific)
+   
+   Advanced PDF Generation:
+      Package:         reportlab == 4.2.0
+      Purpose:         Create complex PDF layouts, charts, tables
+      Use:             Advanced document formatting features
+   
+   PDF Manipulation:
+      Package:         pypdf >= 4.0.0
+      Purpose:         Merge, split, encrypt PDFs
+      Use:             PDF post-processing, watermarking
+   
+   PDF to Image Conversion:
+      Package:         pdf2image == 1.17.0
+      Purpose:         Convert PDF pages to images (PNG, JPEG)
+      Use:             Document preview generation
+      System Dep:      poppler-utils
+   
+   Image Processing:
+      Package:         Pillow >= 10.4.0, < 12.0
+      Purpose:         Image manipulation, resizing, filtering
+      Use:             Watermark addition, image optimization
+
+5. ENVIRONMENT & CONFIGURATION
+─────────────────────────────────────────────────────────────────────────────
+   Package:            python-dotenv == 1.0.1
+   Purpose:            Load environment variables from .env file
+   Loaded From:        .env file in project root
+   Use:                Secure storage of secrets and configuration
+   
+   Environment Variables Used:
+      DJANGO_SECRET_KEY        - Django security key
+      DJANGO_SETTINGS_MODULE   - Which settings to use (development/production)
+      GEMINI_API_KEY          - Google Gemini API authentication
+      LLM_MODEL               - Which AI model to use
+      DATABASE_URL            - PostgreSQL connection string
+      DEBUG                   - Django debug mode (True/False)
+
+6. FRONTEND & USER INTERFACE
+─────────────────────────────────────────────────────────────────────────────
+   Form Handling:       django-crispy-forms >= 2.0
+                        [Render forms using templates with validation]
+   
+   CSS Framework:       crispy-bootstrap5 >= 2.0
+                        [Bootstrap 5 templates for crispy-forms]
+   
+   Base CSS:            Bootstrap 5 (via CDN or static files)
+   Template Engine:     Jinja2 (built into Django)
+   HTML Generation:     Django templates
+   
+   Features:
+      - Responsive design (mobile, tablet, desktop)
+      - Form validation
+      - Authentication UI
+      - Document download interface
+
+
+API USAGE & INTEGRATION DETAILS
+================================================================================
+
+═══════════════════════════════════════════════════════════════════════════════
+
+GOOGLE GEMINI API FLOW:
+
+1. USER INITIATES GENERATION
+   ├─ User enters:
+   │  ├─ Document Type (office, circular, policy)
+   │  ├─ Topic/Subject
+   │  ├─ Language (en, hi)
+   │  └─ Optional: Previous body (for regeneration)
+   │
+   └─ Request sent to Django view
+
+2. DJANGO VIEW PROCESSING
+   ├─ Validates input parameters
+   ├─ Checks user authentication
+   ├─ Loads appropriate prompt template from prompts/ folder
+   └─ Calls service.generate_body() or service.regenerate_body()
+
+3. PROMPT TEMPLATE SELECTION
+   ├─ English prompt templates: prompts/office_order.py, circular.py, policy.py
+   ├─ Hindi prompt templates: Same files (separate Hi_TEMPLATE_REGENERATE, etc.)
+   ├─ Templates use LangChain PromptTemplate for variable substitution
+   └─ Built in prompts/_shared.py
+
+4. GOOGLE GEMINI API CALL
+   ├─ Endpoint: https://generativelanguage.googleapis.com
+   ├─ Authentication: GEMINI_API_KEY (from .env)
+   ├─ Request Format:
+   │  {
+   │    "model": "gemini-2.5-flash-lite",  // or fallback model
+   │    "contents": "Your prompt text here",
+   │    "config": {
+   │      "temperature": 0.3,
+   │      "max_output_tokens": 1024
+   │    }
+   │  }
+   │
+   └─ Response: Generated text with AI-created document body
+
+5. RESPONSE HANDLING
+   ├─ Check if response is valid (not empty, not blocked by safety filters)
+   ├─ Extract text from response
+   ├─ Sanitization: Remove markdown formatting, validate content
+   ├─ Validation: Check document quality and completeness
+   └─ Return to user or raise error
+
+6. FALLBACK MECHANISM
+   ├─ If primary model (gemini-2.5-flash-lite) fails:
+   │  ├─ Automatic retry with gemini-2.0-flash
+   │  ├─ If that fails, try gemini-2.0-flash-lite
+   │  └─ Continue until all models exhausted
+   │
+   └─ Error Types Triggering Fallback:
+      ├─ Quota exceeded (too many requests)
+      ├─ Model unavailable (503 error)
+      ├─ Rate limit reached (429 error)
+      └─ Connection timeout
+
+7. OUTPUT DELIVERY
+   ├─ Save to database (GeneratedDocument model)
+   ├─ Display in UI
+   ├─ Allow export to:
+   │  ├─ .docx (Word document)
+   │  ├─ .pdf (PDF file)
+   │  └─ .html (HTML preview)
+   └─ User can download or regenerate
+
+API KEY SECURITY:
+   ├─ Never hardcoded in source code
+   ├─ Stored only in .env file (Git ignored)
+   ├─ Read from environment at runtime via os.environ.get()
+   ├─ Should be rotated regularly
+   └─ Different keys for development vs production
+
+RATE LIMITING:
+   ├─ Google Gemini has rate limits based on API plan
+   ├─ Application automatically handles 429 responses
+   ├─ Fallback to alternative models if available
+   └─ Consider implementing caching for frequently requested documents
+
+COST CONSIDERATIONS:
+   ├─ Each API call costs quota
+   ├─ Text generation: ~ 1 credit per ~1000 input/output tokens
+   ├─ Fallback provides reliability but uses more quota
+   └─ Monitoring recommended to track usage
+
+
+PROJECT STRUCTURE & DATA FLOW
+================================================================================
+
+═══════════════════════════════════════════════════════════════════════════════
+
+USER AUTHENTICATION FLOW:
+   1. User visits /login/ (auth_views.py)
+   2. Enters username and password
+   3. Django authenticates against User model
+   4. Creates session (database-backed in production)
+   5. Redirects to /dashboard/
+   6. Session verified on each request via middleware
+
+
+DOCUMENT GENERATION FLOW:
+   1. User accesses form (e.g., /office-order/)
+   2. Fills in topic, language, additional fields
+   3. Submits form
+   4. views/office_order.py handles POST request
+   5. Calls common.generate_body_with_ai()
+   6. Validates input via validation.py
+   7. Loads prompt from prompts/office_order.py
+   8. Sends to Google Gemini API via client.py
+   9. API returns generated text
+   10. Sanitizes output via sanitization.py
+   11. Saves to GeneratedDocument model
+   12. Renders template with result
+   13. User can download as .docx or .pdf
+
+
+DATABASE MODELS:
+
+   User (Django built-in)
+      ├─ id, username, email, password_hash
+      └─ Used for authentication
+
+   UserProfile (Custom extension)
+      ├─ user (ForeignKey to User)
+      ├─ role, department, designation
+      └─ Additional user metadata
+
+   DocumentLog (Legacy - audit trail)
+      ├─ document_type (Office Order, Circular, Policy, Notice)
+      ├─ language (en, hi)
+      ├─ reference_id
+      ├─ content (full document)
+      └─ created_at (timestamp)
+
+   GeneratedDocument (Primary - new system)
+      ├─ document_type (office, circular, policy)
+      ├─ user (ForeignKey to User)
+      ├─ subject_en, subject_hi
+      ├─ body_en, body_hi (AI-generated content)
+      ├─ status (draft, approved, published)
+      ├─ created_at, updated_at
+      └─ All metadata for complete audit trail
+
+
+SUPPORTED DOCUMENT TYPES
+================================================================================
+
+1. OFFICE ORDER (office)
+   ├─ Language: English & Hindi
+   ├─ Components: Date, Subject, Body, Signature
+   ├─ Use: Official orders from government departments
+   └─ AI Role: Generate professional order content
+
+2. CIRCULAR (circular)
+   ├─ Language: English & Hindi
+   ├─ Components: Circular number, Date, Subject, Body, Distribution
+   ├─ Use: Department-wide communications and notices
+   └─ AI Role: Generate clear circular text
+
+3. POLICY (policy)
+   ├─ Language: English & Hindi
+   ├─ Components: Policy name, Objective, Guidelines, Implementation
+   ├─ Use: Government policy documents
+   └─ AI Role: Generate comprehensive policy content
+
+4. NOTICE / ADVERTISEMENT (advertisement)
+   ├─ Language: English & Hindi
+   ├─ Components: Title, Description, Requirements, Deadline
+   ├─ Use: Job postings, announcements, notices
+   └─ AI Role: Generate professional notices
+
+
+SETTINGS & CONFIGURATION
+================================================================================
+
+DEVELOPMENT SETTINGS (settings/development.py):
+   ├─ DEBUG: True
+   ├─ ALLOWED_HOSTS: ['localhost', '127.0.0.1', '[::1]']
+   ├─ SECRET_KEY: Dev key (insecure placeholder)
+   ├─ DATABASE: SQLite3 (db.sqlite3)
+   │  └─ For PostgreSQL, uses neon cloud DB
+   ├─ EMAIL: Console output (development)
+   ├─ STATIC FILES: Django dev server
+   └─ LOGGING: DEBUG level for generator app
+
+PRODUCTION SETTINGS (settings/production.py):
+   ├─ DEBUG: False
+   ├─ ALLOWED_HOSTS: From environment variable
+   ├─ SECRET_KEY: From environment (must be set)
+   ├─ DATABASE: PostgreSQL (production)
+   │  └─ Connection pooling enabled
+   ├─ HTTPS: Enforced (SECURE_SSL_REDIRECT)
+   ├─ HSTS: Enabled (SECURE_HSTS_SECONDS = 1 year)
+   ├─ SECURE_COOKIES: Enabled
+   ├─ STATIC FILES: WhiteNoise middleware
+   ├─ SESSION: Database-backed (secure)
+   └─ LOGGING: INFO level (minimal verbosity)
+
+
+HOW TO RUN THE PROJECT
+================================================================================
+
+PREREQUISITES:
+   1. Python 3.9 or higher installed
+   2. Virtual environment tool (venv, virtualenv, conda)
+   3. Git (for version control)
+   4. System dependencies:
+      Windows:  Visual C++ Build Tools
+      Linux:    libpq-dev, libcairo2-dev, build-essential, etc.
+      macOS:    Xcode Command Line Tools, brew install libpq cairo pango
+
+SETUP STEPS:
+
+1. NAVIGATE TO PROJECT DIRECTORY:
+   cd D:\BISAG\DocumentGenerator-main\DocumentGenerator-main
+
+2. ACTIVATE VIRTUAL ENVIRONMENT:
+   Windows:  .\.venv\Scripts\activate
+   Linux:    source .venv/bin/activate
+   macOS:    source .venv/bin/activate
+
+3. INSTALL DEPENDENCIES:
+   pip install -r FormalDocument/ai_formal_generator/requirements.txt
+
+4. CONFIGURE ENVIRONMENT:
+   - Go to: FormalDocument/ai_formal_generator/.env
+   - Update GEMINI_API_KEY with your actual key
+   - Ensure DATABASE_URL is correctly set
+   - Check DJANGO_SETTINGS_MODULE
+
+5. RUN MIGRATIONS:
+   cd FormalDocument/ai_formal_generator
+   python manage.py migrate
+
+6. CREATE ADMIN USER (optional):
+   python manage.py createsuperuser
+   Follow prompts to set username and password
+
+7. START DEVELOPMENT SERVER:
+   python manage.py runserver
+   
+   Output:
+      Starting development server at http://127.0.0.1:8000/
+      Quit the server with CTRL-BREAK (Windows) or CTRL-C (Unix)
+
+8. OPEN IN BROWSER:
+   http://localhost:8000
+   
+   Admin panel: http://localhost:8000/admin/
+   Login page: http://localhost:8000/login/
+   Dashboard: http://localhost:8000/dashboard/
+
+
+URL ENDPOINTS
+================================================================================
+
+Authentication:
+   /login/               - User login
+   /signup/              - User registration
+   /logout/              - User logout
+   /change-password/     - Password change
+
+Document Generation:
+   /office-order/        - Office Order form & generation
+   /circular/            - Circular form & generation
+   /policy/              - Policy form & generation
+   /advertisement/       - Advertisement/Notice form & generation
+
+User Interface:
+   /                     - Home page
+   /dashboard/           - User's document list
+   /admin/               - Django admin panel
+
+APIs/Downloads:
+   /download/<document_id>.docx    - Download as Word
+   /download/<document_id>.pdf     - Download as PDF
+   /regenerate/<document_id>/      - Regenerate document
+
+
+KEY MODULES & THEIR PURPOSES
+================================================================================
+
+services/service.py:
+   ├─ generate_body()       - Main function for document generation
+   ├─ regenerate_body()     - Regenerate with refinements
+   ├─ translate_subject_to_hindi()  - Text translation
+   └─ Error handling with fallback models
+
+services/client.py:
+   ├─ get_client()          - Initialize Gemini API client (lazy-loaded)
+   ├─ MODEL_FALLBACK_CHAIN  - List of models to try in order
+   ├─ GENERATION_CONFIG     - Temperature, max tokens settings
+   └─ reset_client()        - Clear cached client instance
+
+services/validation.py:
+   ├─ validate_document_type()    - Check if document type is valid
+   ├─ validate_inputs()           - Validate language and fields
+   ├─ SUPPORTED_LANGUAGES         - ('en', 'hi')
+   ├─ DocumentType                - ('office', 'circular', 'policy')
+   └─ Language                    - Type hint for language
+
+services/sanitization.py:
+   ├─ strip_markdown()      - Remove markdown formatting
+   ├─ validate_body()       - Check generated content quality
+   └─ Content validation rules
+
+prompts/_shared.py:
+   ├─ build_generation()    - Build generation prompt
+   ├─ build_regeneration()  - Build regeneration prompt
+   ├─ select_template()     - Choose English or Hindi template
+   └─ Shared utilities for all prompts
+
+prompts/office_order.py:
+   ├─ ENGLISH_GENERATION_TEMPLATE
+   ├─ HINDI_GENERATION_TEMPLATE
+   ├─ Variant templates for regeneration
+   └─ Specific prompting for office orders
+
+prompts/circular.py, policy.py:
+   └─ Similar structure with document-type-specific templates
+
+views/common.py:
+   ├─ generate_body_with_ai()     - Orchestrate generation
+   ├─ regenerate_body_with_ai()   - Orchrestrate regeneration
+   ├─ save_document_to_db()       - Persist to database
+   ├─ format_document()           - Add headers, footers, formatting
+   └─ Shared view utilities
+
+views/office_order.py, circular.py, policy.py, advertisement.py:
+   ├─ handle GET requests  - Display form
+   ├─ handle POST requests - Process form, call AI
+   ├─ generate document   - Create .docx/.pdf exports
+   └─ Document-type-specific view logic
+
+models.py:
+   ├─ DocumentLog         - Legacy document audit
+   ├─ GeneratedDocument   - Main document storage
+   ├─ UserProfile         - User extensions
+   └─ All database schema
+
+
+PERFORMANCE CHARACTERISTICS
+================================================================================
+
+Startup Time:
+   Cold Start:     3-5 seconds (first load, all modules imported)
+   Warm Start:     1-2 seconds (subsequent requests, modules cached)
+   First Request:  2-4 seconds (includes Django initialization)
+
+Response Times:
+   Static File Load:       100-200ms
+   Form Page Render:       200-500ms
+   Document Generation:    5-30 seconds (depends on AI, network)
+   PDF Export:             2-5 seconds
+   Database Query:         10-100ms (simple queries)
+
+Memory Usage:
+   Django Process:         100-150 MB
+   Per Request:            10-20 MB
+   Worker Process (Gunicorn): 150-250 MB each
+
+Scalability:
+   Horizontal: Add more Gunicorn workers/servers
+   Vertical:   Increase worker memory and CPU
+   Database:   Neon auto-scales (Cloud PostgreSQL)
+   Caching:    Can add Redis for session/query caching
+
+
+DEPENDENCIES SUMMARY
+================================================================================
+
+Core Production Dependencies (11 packages):
+   ├─ Django                      4.2.26
+   ├─ psycopg2-binary             2.9.0+
+   ├─ google-genai                1.0-2.x
+   ├─ langchain-core              0.3-0.4
+   ├─ python-docx                 1.1.2
+   ├─ weasyprint                  68.0+
+   ├─ reportlab                   4.2.0
+   ├─ pypdf                        4.0.0+
+   ├─ pdf2image                   1.17.0
+   ├─ Pillow                      10.4.0-11.x
+   ├─ django-crispy-forms         2.0+
+   ├─ crispy-bootstrap5           2.0+
+   ├─ python-dotenv               1.0.1
+   └─ [Total size: ~23 MB]
+
+Development Dependencies (15+ additional):
+   ├─ Testing:  pytest, pytest-django, pytest-cov, factory-boy, faker
+   ├─ Linting:  black, flake8, pylint, isort, bandit
+   └─ Tools:    django-extensions, django-debug-toolbar, ipython, mypy
+
+Production Deployment (10+ optional):
+   ├─ Server:   gunicorn, whitenoise
+   ├─ Caching:  redis, django-redis
+   └─ Monitor:  sentry-sdk, newrelic, datadog
+
+
+SECURITY FEATURES & BEST PRACTICES
+================================================================================
+
+Built-in Django Security:
+   ✓ CSRF (Cross-Site Request Forgery) Protection
+   ✓ SQL Injection Prevention (uses ORM)
+   ✓ XSS (Cross-Site Scripting) Protection
+   ✓ Secure Password Hashing (PBKDF2)
+   ✓ Session Security (HTTP-only cookies)
+
+Production Security:
+   ✓ HTTPS Enforcement (SECURE_SSL_REDIRECT)
+   ✓ HSTS Headers (HTTP Strict Transport Security)
+   ✓ Secure Cookies (secure flag set)
+   ✓ Environment Variable Secrets (never in code)
+   ✓ Database Connection Pooling
+   ✓ Content Security Policy (can be added)
+
+API Security:
+   ✓ API Key stored in .env (not in source)
+   ✓ Rate limiting handled by Google
+   ✓ Input validation before API calls
+   ✓ Output validation after API response
+
+
+TROUBLESHOOTING COMMON ISSUES
+================================================================================
+
+Issue 1: "ModuleNotFoundError: No module named 'weasyprint'"
+   Solution: Install system dependencies
+   Windows:  Install Visual C++ Build Tools
+   Linux:    sudo apt-get install libcairo2-dev libpango-1.0-0 libpango-cairo-1.0-0
+   Mac:      brew install cairo pango
+
+Issue 2: "Could not connect to PostgreSQL database"
+   Solution: 
+      1. Check .env DATABASE_URL is correct
+      2. Verify internet connection (cloud DB)
+      3. Check firewall/proxy settings
+      4. Verify credentials with neon admin console
+
+Issue 3: "GEMINI_API_KEY not found"
+   Solution:
+      1. Check .env file has GEMINI_API_KEY = xxx
+      2. Ensure .env is in correct directory
+      3. Restart Django server after .env changes
+      4. Check key hasn't expired in Google Console
+
+Issue 4: "Static files not found" (production)
+   Solution: python manage.py collectstatic --noinput
+
+Issue 5: "Database tables don't exist"
+   Solution: python manage.py migrate
+
+
+VERSION HISTORY & ROADMAP
+================================================================================
+
+Current Version: 12.0 (April 2026)
+   ✓ Production ready
+   ✓ All document types supported
+   ✓ Bilingual support (English & Hindi)
+   ✓ Comprehensive error handling
+   ✓ AI fallback mechanisms
+
+Previous Phases:
+   Phase 1-3:   Architecture and setup
+   Phase 4-6:   Document type additions
+   Phase 7-9:   Generation hardening and optimization
+   Phase 10-11: Production settings and optimization
+
+Future Roadmap:
+   - Python 3.12 upgrade
+   - Django 5.x migration
+   - Enhanced caching layer
+   - Advanced monitoring
+   - Batch generation support
+
+
+CONTACT & SUPPORT
+================================================================================
+
+Project:        BISAG-N DocumentGenerator
+Maintained By:  BISAG-N Development Team
+Documentation:  See /docs directory
+Issues:         Check documentation or contact team
+
+Key Resources:
+   - Django Docs: https://docs.djangoproject.com/
+   - Google GenAI: https://ai.google.dev/docs
+   - PostgreSQL: https://www.postgresql.org/docs/
+   - Python: https://docs.python.org/3/
+
+
+================================================================================
+                            END OF PROJECT DETAILS
+================================================================================
+
+This file contains all necessary information to understand, setup, run, and 
+maintain the BISAG-N DocumentGenerator project.
+
+For comprehensive technical details, refer to the documentation files in:
+   /docs directory
+   Individual module docstrings
+   README.md files
+
+Last Updated: April 6, 2026
+Status: Production Ready

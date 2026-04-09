@@ -1,0 +1,42 @@
+# ============================================================================
+# BISAG-N DocumentGenerator - Development Requirements
+# ============================================================================
+# Install with: pip install -r requirements-dev.txt
+# This includes all base requirements plus development-only packages
+# ============================================================================
+
+# Include all base requirements
+-r requirements.txt
+
+# Testing & Quality Assurance
+# ============================================================================
+pytest>=7.4.0                  # Unit testing framework
+pytest-django>=4.5.0           # Django integration for pytest
+pytest-cov>=4.1.0              # Code coverage measurement
+factory-boy>=3.3.0             # Test data factory for model testing
+faker>=19.0.0                  # Fake data generation for testing
+
+# Code Quality & Formatting
+# ============================================================================
+black>=23.0.0                  # Code formatter (PEP 8 compliant)
+flake8>=6.0.0                  # Code linter (checks style, errors)
+pylint>=2.17.0                 # Advanced code analysis
+isort>=5.12.0                  # Import sorting utility
+bandit>=1.7.5                  # Security issue scanner
+
+# Development Tools & Debugging
+# ============================================================================
+django-extensions>=3.2.0       # Django helpful commands (shell_plus, etc.)
+django-debug-toolbar>=4.0.0    # SQL query debugging and performance analysis
+ipython>=8.0.0                 # Enhanced Python shell with autocomplete
+django-stubs>=4.2.0            # Type hints for Django (mypy support)
+mypy>=1.5.0                    # Static type checker for Python
+
+# Documentation
+# ============================================================================
+sphinx>=7.0.0                  # Documentation generator
+sphinx-rtd-theme>=1.3.0        # Read the Docs theme for Sphinx
+
+# Environment Management (Optional)
+# ============================================================================
+python-decouple>=3.8           # Alternative to python-dotenv

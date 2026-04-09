@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        
+        body {
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #000;
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header-line {
+            font-weight: bold;
+            font-size: 13pt;
+            text-align: center;
+            margin: 3px 0;
+        }
+        
+        .advertisement-title {
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 14pt;
+            text-align: center;
+            margin: 25px 0 20px;
+        }
+        
+        .hiring-table {
+            width: 100%;
+            margin: 25px auto;
+            border-collapse: collapse;
+            font-size: 10pt;
+        }
+        
+        .hiring-table th,
+        .hiring-table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .hiring-table th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        .content-section {
+            text-align: justify;
+            line-height: 1.8;
+            margin: 20px 0;
+            font-size: 11pt;
+        }
+        
+        .email-highlight {
+            font-weight: bold;
+        }
+        
+        .note-text {
+            font-style: italic;
+            font-size: 10pt;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Logo Section -->
+<div class="logo-section">
+    <div style="text-align: center; margin-bottom: 20px;">
+        {% if logo_path %}
+        <img src="{{ logo_path }}" alt="BISAG Logo" style="height: 100px; width: auto;">
+        {% else %}
+        <img src="{% static 'generator/bisag_logo.png' %}" alt="BISAG Logo" style="height: 100px; width: auto;">
+        {% endif %}
+    </div>
+</div>
+
+<!-- Header Section -->
+<div class="header-line">{{ header.org_name }}</div>
+<div class="header-line">{{ header.ministry }}</div>
+<div class="header-line">{{ header.government }}</div>
+
+<!-- Advertisement Title -->
+<div class="advertisement-title">
+    {{ title }}
+</div>
+
+<!-- Hiring Table -->
+<table class="hiring-table">
+    <thead>
+        <tr>
+            <th style="width: 20%;">{% if language == "hi" %}पद{% else %}Designation{% endif %}</th>
+            <th style="width: 12%;">{% if language == "hi" %}आवश्यकताओं की संख्या{% else %}No. of Requirements{% endif %}</th>
+            <th style="width: 30%;">{% if language == "hi" %}शैक्षिक योग्यता{% else %}Educational Qualification{% endif %}</th>
+            <th style="width: 13%;">{% if language == "hi" %}अनुभव (वर्ष){% else %}Years of Experience{% endif %}</th>
+            <th style="width: 15%;">{% if language == "hi" %}वेतन ({{ ctc_type|title }}){% else %}CTC ({{ ctc_type|title }}){% endif %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ designation_label }}</td>
+            <td>{{ num_requirements }}</td>
+            <td>{{ qualification_display }}</td>
+            <td>{{ years_experience }}</td>
+            <td>{{ ctc_display }}</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- Government Benefit Text -->
+<div class="content-section">
+    {{ govt_benefit_text }}
+</div>
+
+<!-- Application Instructions -->
+<div class="content-section">
+    {{ application_text }}
+</div>
+
+<!-- Email ID -->
+<div class="content-section">
+    {% if language == "hi" %}ईमेल-आईडी:{% else %}Email-id:{% endif %} <span class="email-highlight">{{ email_id }}</span>
+</div>
+
+<!-- Subject Line Note -->
+<div class="note-text">
+    {{ subject_line_note }}
+</div>
+
+<!-- Last Date Text -->
+<div class="content-section">
+    {{ last_date_text }}
+</div>
+
+</body>
+</html>

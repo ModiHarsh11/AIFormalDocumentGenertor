@@ -1,0 +1,55 @@
+# =============================================================
+# BISAG-N FormalDocument Generator — .gitignore
+# =============================================================
+
+# --- Environment / Secrets ---
+.env
+*.env
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# --- Virtual Environments ---
+venv/
+.venv/
+finale_BISAG-N/
+
+# --- Django ---
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+logs/
+
+# --- IDE ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Distribution / Build ---
+dist/
+build/
+*.egg-info/
+*.egg
+
+# --- WeasyPrint / PDF temp ---
+policy_uploads/
+
+# --- Coverage / Testing ---
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+.tox/
+

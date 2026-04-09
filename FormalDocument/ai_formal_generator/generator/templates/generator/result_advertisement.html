@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <title>Advertisement Preview - BISAG-N</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f5f5; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .advertisement-preview {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 50px 60px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            font-family: 'Times New Roman', serif;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header-line {
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .advertisement-title {
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 18px;
+            margin: 25px 0 20px;
+            text-align: center;
+        }
+        .hiring-table {
+            width: 100%;
+            margin: 30px auto;
+            border-collapse: collapse;
+        }
+        .hiring-table th,
+        .hiring-table td {
+            border: 1px solid #333;
+            padding: 12px;
+            text-align: center;
+        }
+        .hiring-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        .content-section {
+            text-align: justify;
+            line-height: 1.8;
+            margin: 25px 0;
+            font-size: 14px;
+        }
+        .email-highlight {
+            font-weight: bold;
+        }
+        .note-text {
+            font-style: italic;
+            font-size: 13px;
+            margin: 15px 0;
+        }
+        .action-buttons {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px dashed #dee2e6;
+        }
+        .btn {
+            margin: 0 5px;
+            border-radius: 4px;
+        }
+        .btn-danger {
+            background: #dc3545;
+            border: none;
+        }
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+        }
+        @media print {
+            nav { display: none !important; }
+            .action-buttons { display: none !important; }
+            body { background: white !important; padding: 0 !important; }
+            .advertisement-preview { box-shadow: none !important; padding: 20px !important; margin: 0 !important; max-width: 100% !important; border-radius: 0 !important; }
+        }
+        @media (max-width: 768px) {
+            .advertisement-preview {
+                padding: 20px;
+            }
+            .hiring-table {
+                font-size: 12px;
+            }
+            .hiring-table th,
+            .hiring-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{% static 'generator/theme_toggle.css' %}">
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="navbar py-2" style="background:#2c3e50;">
+  <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+    <a class="text-white text-decoration-none fw-bold" href="/">BISAG-N Document Generator</a>
+    <div class="d-flex align-items-center gap-3">
+      <a href="{% url 'dashboard' %}" class="text-white text-decoration-none small">My Dashboard</a>
+      <a href="{% url 'home' %}" class="text-white text-decoration-none small">New Document</a>
+      <span class="text-white-50 small">{{ user.get_full_name|default:user.username }}</span>
+      <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme" aria-pressed="false">
+        <span class="theme-toggle-track"><span class="theme-toggle-thumb"><span class="theme-emoji">☀️</span></span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+{% else %}
+<div class="theme-toggle-wrap">
+  <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme" aria-pressed="false">
+    <span class="theme-toggle-track"><span class="theme-toggle-thumb"><span class="theme-emoji">☀️</span></span></span>
+  </button>
+</div>
+{% endif %}
+
+<div class="advertisement-preview">
+
+{% if serial_number %}
+<div style="margin-bottom:15px;padding:10px 15px;background:#eef2f7;border-radius:6px;border-left:4px solid #2c3e50;display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <span style="font-size:11px;color:#6c757d;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Document Serial</span><br>
+    <span style="font-family:monospace;font-size:16px;font-weight:700;color:#2c3e50;">{{ serial_number }}</span>
+  </div>
+</div>
+{% endif %}
+    
+    <!-- BISAG Logo -->
+    <div class="header-section">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="{% static 'generator/bisag_logo.png' %}" alt="BISAG Logo" style="height: 100px; width: 100px;">
+        </div>
+        
+        <!-- Header Lines -->
+        <div class="header-line">{{ header.org_name }}</div>
+        <div class="header-line">{{ header.ministry }}</div>
+        <div class="header-line">{{ header.government }}</div>
+    </div>
+    
+    <!-- Advertisement Title -->
+    <div class="advertisement-title">
+        {{ title }}
+    </div>
+    
+    <!-- Hiring Table -->
+    <table class="hiring-table">
+        <thead>
+            <tr>
+                <th>{% if language == "hi" %}पद{% else %}Designation{% endif %}</th>
+                <th>{% if language == "hi" %}आवश्यकताओं की संख्या{% else %}No. of Requirements{% endif %}</th>
+                <th>{% if language == "hi" %}शैक्षिक योग्यता{% else %}Educational Qualification{% endif %}</th>
+                <th>{% if language == "hi" %}अनुभव (वर्ष){% else %}Years of Experience{% endif %}</th>
+                <th>{% if language == "hi" %}वेतन ({{ ctc_type|title }}){% else %}CTC ({{ ctc_type|title }}){% endif %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ designation_label }}</td>
+                <td>{{ num_requirements }}</td>
+                <td>{{ qualification_display }}</td>
+                <td>{{ years_experience }}</td>
+                <td>{{ ctc_display }}</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Government Benefit Text -->
+    <div class="content-section">
+        {{ govt_benefit_text }}
+    </div>
+    
+    <!-- Application Instructions -->
+    <div class="content-section">
+        {{ application_text }}
+    </div>
+    
+    <!-- Email ID -->
+    <div class="content-section">
+        {% if language == "hi" %}ईमेल-आईडी:{% else %}Email-id:{% endif %} <span class="email-highlight">{{ email_id }}</span>
+    </div>
+    
+    <!-- Subject Line Note -->
+    <div class="note-text">
+        {{ subject_line_note }}
+    </div>
+    
+    <!-- Last Date Text -->
+    <div class="content-section">
+        {{ last_date_text }}
+    </div>
+    
+</div>
+
+<!-- Download Loading Overlay -->
+<div id="downloadOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+    <div style="background:white; padding:32px 48px; border-radius:10px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+        <div style="width:48px;height:48px;border:4px solid #dee2e6;border-top-color:#2c3e50;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+        <div style="font-size:16px;font-weight:600;color:#2c3e50;" id="overlayMsg">Generating document…</div>
+        <div style="font-size:12px;color:#6c757d;margin-top:6px;">This may take a few seconds</div>
+    </div>
+</div>
+<style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <button class="btn btn-danger btn-lg" onclick="startDownload('{% url 'download_advertisement_pdf' %}', 'Generating PDF…')">
+        📄 Download PDF
+    </button>
+    <button class="btn btn-success btn-lg" onclick="startDownload('{% url 'download_advertisement_docx' %}', 'Generating DOCX…')">
+        📝 Download DOCX
+    </button>
+    <button class="btn btn-info btn-lg" onclick="window.print()" style="color:#212529;">
+        🖨️ Print
+    </button>
+    <a href="{% url 'dashboard' %}" class="btn btn-dark btn-lg">
+        📊 My Dashboard
+    </a>
+    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">
+        ← New Document
+    </a>
+</div>
+
+<script>
+function startDownload(url, msg) {
+    const overlay = document.getElementById('downloadOverlay');
+    const msgEl = document.getElementById('overlayMsg');
+    msgEl.textContent = msg;
+    overlay.style.display = 'flex';
+    
+    // Create a hidden iframe to trigger download
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = url;
+    document.body.appendChild(iframe);
+    
+    // Hide overlay after a delay
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 3000);
+}
+</script>
+<script src="{% static 'generator/theme_toggle.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="{{ language|default:'en' }}">
+<head>
+    <title>Policy Preview - BISAG-N</title>
+    {% load static %}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f5f5f5; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .policy-preview {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 50px 60px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            font-family: 'Times New Roman', serif;
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header-line {
+            font-weight: bold;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .policy-title {
+            font-weight: bold;
+            text-decoration: underline;
+            font-size: 18px;
+            margin: 25px 0 20px;
+            text-align: center;
+        }
+        .date-section {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .subject-section {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .body-section {
+            text-align: justify;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .from-section {
+            text-align: right;
+            font-weight: bold;
+            margin: 40px 0 30px;
+        }
+        .to-section {
+            font-weight: bold;
+            margin: 30px 0 20px;
+        }
+        .to-section ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .to-section li {
+            margin-bottom: 8px;
+        }
+        .attached-section {
+            font-weight: normal;
+            margin: 30px 0;
+        }
+        .action-buttons {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px dashed #dee2e6;
+        }
+        .btn {
+            margin: 0 5px;
+            border-radius: 4px;
+        }
+        .btn-danger {
+            background: #dc3545;
+            border: none;
+        }
+        .btn-success {
+            background: #28a745;
+            border: none;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            border: none;
+        }
+        .regenerate-section {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 50px 60px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        .regenerate-section h5 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+        .regenerate-section p {
+            color: #6c757d;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .regenerate-section .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .regenerate-section .form-control:focus {
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.15);
+        }
+        .regenerate-section .form-label {
+            color: #495057;
+            font-weight: 600;
+        }
+        .btn-regenerate {
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-weight: 600;
+            border-radius: 4px;
+        }
+        .btn-regenerate:hover {
+            background: #1a252f;
+            color: white;
+        }
+.version-toggle {
+            text-align: center;
+            margin: 15px 0;
+            padding: 20px;
+        }
+        .btn-toggle {
+            margin: 0 8px;
+            padding: 10px 25px;
+            background: white;
+            color: #2c3e50;
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-toggle:hover {
+            border-color: #2c3e50;
+            background: #f8f9fa;
+        }
+        #origBtn.active {
+            background: #198754 !important;
+            border-color: #198754 !important;
+            color: white !important;
+        }
+        #regenBtn.active {
+            background: #0d6efd !important;
+            border-color: #0d6efd !important;
+            color: white !important;
+        }
+        .hidden {
+            display: none;
+        }
+        @media print {
+            nav { display: none !important; }
+            .action-buttons { display: none !important; }
+            .regenerate-section { display: none !important; }
+            .version-toggle { display: none !important; }
+            body { background: white !important; padding: 0 !important; }
+            .policy-preview { box-shadow: none !important; padding: 20px !important; margin: 0 !important; max-width: 100% !important; border-radius: 0 !important; }
+        }
+        @media (max-width: 768px) {
+            .regenerate-section .d-flex {
+                flex-direction: column !important;
+            }
+.btn-toggle {
+                margin: 5px;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+	        }
+	    </style>
+    <link rel="stylesheet" href="{% static 'generator/theme_toggle.css' %}">
+</head>
+<body>
+
+{% if user.is_authenticated %}
+<nav class="navbar py-2" style="background:#2c3e50;">
+  <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+    <a class="text-white text-decoration-none fw-bold" href="/">BISAG-N Document Generator</a>
+    <div class="d-flex align-items-center gap-3">
+      <a href="{% url 'dashboard' %}" class="text-white text-decoration-none small">My Dashboard</a>
+      <a href="{% url 'home' %}" class="text-white text-decoration-none small">New Document</a>
+      <span class="text-white-50 small">{{ user.get_full_name|default:user.username }}</span>
+      <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme" aria-pressed="false">
+        <span class="theme-toggle-track"><span class="theme-toggle-thumb"><span class="theme-emoji">☀️</span></span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+{% else %}
+<div class="theme-toggle-wrap">
+  <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme" aria-pressed="false">
+    <span class="theme-toggle-track"><span class="theme-toggle-thumb"><span class="theme-emoji">☀️</span></span></span>
+  </button>
+</div>
+{% endif %}
+
+<div class="policy-preview">
+
+{% if serial_number %}
+<div style="margin-bottom:15px;padding:10px 15px;background:#eef2f7;border-radius:6px;border-left:4px solid #2c3e50;display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <span style="font-size:11px;color:#6c757d;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Document Serial</span><br>
+    <span style="font-family:monospace;font-size:16px;font-weight:700;color:#2c3e50;">{{ serial_number }}</span>
+  </div>
+  {% if doc_id %}
+  <a href="{% url 'document_edit' doc_id %}" style="background:#f0b429;color:#333;padding:6px 14px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;">✏️ Edit Fields</a>
+  {% endif %}
+</div>
+{% endif %}
+    
+    <!-- BISAG Logo -->
+    <div class="header-section">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="{% static 'generator/bisag_logo.png' %}" alt="BISAG Logo" style="height: 100px; width: 100px;">
+        </div>
+        
+        <!-- Header Lines -->
+        <div class="header-line">{{ header.org_name }}</div>
+        <div class="header-line">{{ header.ministry }}</div>
+        <div class="header-line">{{ header.government }}</div>
+    </div>
+    
+    <!-- Policy Title -->
+    <div class="policy-title">
+        {% if language == "hi" %}नीति{% else %}Policy{% endif %}
+    </div>
+    
+    <!-- Date -->
+    <div class="date-section">
+        {% if language == "hi" %}दिनांक :{% else %}Date :{% endif %} {{ date }}
+    </div>
+    
+    <!-- Subject -->
+    <div class="subject-section">
+        {% if language == "hi" %}विषय :{% else %}Subject :{% endif %} {{ subject }}
+    </div>
+    
+    <!-- Body -->
+    <div class="body-section" id="bodyDisplay">
+        <div id="originalBody">{{ body|linebreaks }}</div>
+        <div id="regeneratedBody" class="hidden"></div>
+    </div>
+    
+    <!-- From Section -->
+    <div class="from-section">
+        {{ from }}
+    </div>
+    
+    <!-- To Section (Bullet Points) -->
+    <div class="to-section">
+        {% if language == "hi" %}प्रति :{% else %}To :{% endif %}
+        <ul>
+            {% for designation in to_designations %}
+            <li>{{ designation }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Attached Section -->
+    <div class="attached-section">
+        {% if language == "hi" %}संलग्न :{% else %}Attached :{% endif %} {{ attached_pdf_name }}
+    </div>
+    
+</div>
+
+<!-- Version Toggle (Hidden initially, shown after regeneration) -->
+<div id="versionToggle" class="version-toggle hidden">
+    <strong style="font-size: 16px; color: #2c3e50;">📋 Select Version / संस्करण चुनें:</strong><br><br>
+    <button id="origBtn" class="btn btn-toggle active" onclick="switchVersion('original')">
+        ✓ Original / मूल
+    </button>
+    <button id="regenBtn" class="btn btn-toggle" onclick="switchVersion('regenerated')">
+        ✨ Regenerated / पुनर्जनित
+    </button>
+</div>
+
+<!-- Regenerate Section -->
+<div class="regenerate-section">
+    <div class="mb-3">
+        <h5 class="mb-0">🔄 Regenerate Body / मुख्य भाग पुनर्जनित करें</h5>
+        </div>
+    <p style="font-size: 14px;">
+        Enter a new prompt to refine and improve the body content. / नया संकेत दर्ज करें और मुख्य भाग को परिष्कृत करें।
+    </p>
+    <div class="mb-3">
+        <label class="form-label">Regeneration Prompt / पुनर्जनन संकेत</label>
+        <textarea id="regeneratePrompt" class="form-control" rows="3" 
+                  placeholder="Example: Make it more formal, add technical details / उदाहरण: इसे और औपचारिक बनाएं, तकनीकी विवरण जोड़ें"></textarea>
+    </div>
+    <button class="btn btn-regenerate" onclick="regenerateBody()">
+        🤖 Regenerate / पुनर्जनित करें
+    </button>
+    <span id="regenerateStatus" style="margin-left: 15px; font-weight: bold;"></span>
+</div>
+
+{% if pdf_base64 %}
+<!-- Second Page - Uploaded PDF Preview -->
+<div style="max-width: 900px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08);">
+    <h5 class="text-center mb-4" style="color: #2c3e50; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+        📎 Attached Policy Document (Additional Pages)
+    </h5>
+    <div style="border: 2px solid #dee2e6; border-radius: 8px; overflow: hidden;">
+        <iframe 
+            src="data:application/pdf;base64,{{ pdf_base64 }}" 
+            type="application/pdf" 
+            width="100%" 
+            height="800px" 
+            style="border: none; display: block;">
+            <p>Your browser does not support PDFs. 
+               <a href="data:application/pdf;base64,{{ pdf_base64 }}" download="attached_policy.pdf">Download the PDF</a> instead.
+            </p>
+        </iframe>
+    </div>
+    <p class="text-center mt-3 text-muted" style="font-size: 14px;">
+        <i class="bi bi-info-circle"></i> This PDF will be merged as pages 2+ when you download the complete policy document.
+    </p>
+</div>
+{% endif %}
+
+<!-- Action Buttons -->
+
+<div class="action-buttons">
+    <button class="btn btn-danger btn-lg" onclick="window.location.href='{% url 'download_policy_pdf' %}'">
+        📄 Download PDF
+    </button>
+    <button class="btn btn-success btn-lg" onclick="window.location.href='{% url 'download_policy_docx' %}'">
+        📝 Download DOCX
+    </button>
+    <button class="btn btn-info btn-lg" onclick="window.print()" style="color:#212529;">
+        🖨️ Print
+    </button>
+    {% if doc_id %}
+    <a href="{% url 'document_edit' doc_id %}" class="btn btn-warning btn-lg" style="color:#212529;">
+        ✏️ Edit Fields
+    </a>
+    {% endif %}
+    <a href="{% url 'dashboard' %}" class="btn btn-dark btn-lg">
+        📊 My Dashboard
+    </a>
+    <a href="{% url 'home' %}" class="btn btn-secondary btn-lg">
+        ← New Document
+    </a>
+</div>
+
+{% load static %}
+<script>
+window.RESULT_CONFIG = {
+    updateBodyUrl:  '{% url "update_policy_body" %}',
+    regenerateUrl:  '{% url "regenerate_policy_body" %}',
+    csrfToken:      '{{ csrf_token }}',
+    originalBody:   `{{ body|escapejs }}`,
+    previousPrompt: `{{ body_prompt|escapejs }}`,
+    language:       '{{ language }}',
+    docId:          '{{ doc_id|default:"" }}',
+};
+</script>
+<script src="{% static 'generator/result_common.js' %}"></script>
+<script src="{% static 'generator/theme_toggle.js' %}"></script>
+
+</body>
+</html>

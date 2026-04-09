@@ -1,0 +1,1732 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BISAG-N Document Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .main-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        .header-section {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            border: 2px solid #2c3e50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c3e50;
+            color: white;
+            font-size: 32px;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .doc-selector {
+            margin-bottom: 30px;
+        }
+        .doc-type-btn {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        .doc-type-btn:hover {
+            border-color: #2c3e50;
+            background: #f8f9fa;
+        }
+        .doc-type-btn.active {
+            border-color: #2c3e50;
+            background: #2c3e50;
+            color: white;
+        }
+        .doc-type-btn .icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .doc-type-btn .title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .form-section {
+            display: none;
+        }
+        .form-section.active {
+            display: block;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+        .form-control, .form-select {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #2c3e50;
+            box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.15);
+        }
+        .collapsible-section {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .collapsible-header {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #2c3e50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+        .collapsible-header:hover {
+            background: #e9ecef;
+        }
+        .collapsible-header .arrow {
+            transition: transform 0.3s;
+        }
+        .collapsible-header.expanded .arrow {
+            transform: rotate(90deg);
+        }
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .collapsible-content.expanded {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 15px;
+            background: #fafafa;
+        }
+        .to-section {
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .btn-generate {
+            background: #5a6c7d;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 180px;
+        }
+        .btn-generate:hover {
+            background: #4a5c6d;
+            color: white;
+        }
+        .btn-generate:disabled {
+            opacity: 0.75;
+            cursor: not-allowed;
+        }
+        .btn-primary {
+            background: #2c3e50;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: #1a252f;
+        }
+        .char-counter {
+            font-size: 12px;
+            color: #6c757d;
+            text-align: right;
+            margin-top: 4px;
+        }
+        .char-counter.warn { color: #e67e22; }
+        .char-counter.limit { color: #dc3545; font-weight: bold; }
+        .btn-generate .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            flex-shrink: 0;
+            margin-right: 6px;
+        }
+        .btn-generate.loading .spinner { display: inline-block; }
+        .btn-generate.loading .btn-label { display: none; }
+        .btn-generate .btn-loading-label {
+            display: none;
+            color: white;
+            font-size: 13px;
+        }
+        .btn-generate.loading .btn-loading-label { display: inline; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        /* Inline AI error message below generate button */
+        .ai-error-msg {
+            display: none;
+            margin-top: 8px;
+            padding: 10px 14px;
+            background: #fff5f5;
+            border: 1px solid #f5c6cb;
+            border-left: 4px solid #dc3545;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #721c24;
+            line-height: 1.5;
+        }
+        .ai-error-msg.show { display: block; }
+        .ai-error-msg .error-icon { font-size: 15px; margin-right: 4px; }
+        .select-all-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .btn-sel {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 3px;
+            border: 1px solid #ced4da;
+            background: white;
+            cursor: pointer;
+            color: #2c3e50;
+        }
+        .btn-sel:hover { background: #e9ecef; }
+        .collapsible-selected {
+            font-size: 12px;
+            color: #28a745;
+            font-weight: 600;
+            margin-left: 8px;
+            background: #e8f5e9;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .btn-clear-form {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid #dc3545;
+            background: white;
+            cursor: pointer;
+            color: #dc3545;
+            float: right;
+        }
+        .btn-clear-form:hover { background: #fff5f5; }
+        .validation-msg {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+        .was-validated .validation-msg { display: block; }
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: #2c3e50;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 9999;
+            pointer-events: none;
+            max-width: 88vw;
+            text-align: center;
+            white-space: pre-line;
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        .toast-msg.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast-msg.toast-error {
+            background: #c0392b;
+        }
+        .toast-msg.toast-warn {
+            background: #e67e22;
+        }
+        /* ── Feature 1: Offline banner ─────────────────────────────────────── */
+        #offlineBanner {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #c0392b;
+            color: white;
+            text-align: center;
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10000;
+            letter-spacing: 0.3px;
+        }
+        #offlineBanner.show { display: block; }
+        body.offline-mode { padding-top: 42px; }
+        body.offline-mode .btn-generate {
+            opacity: 0.45 !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        /* ── Feature 3: Draft history panel ────────────────────────────────── */
+        .draft-history-btn {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 3px;
+            border: 1px solid #2c3e50;
+            background: white;
+            cursor: pointer;
+            color: #2c3e50;
+            float: right;
+            margin-right: 6px;
+        }
+        .draft-history-btn:hover { background: #f0f4f8; }
+        .draft-panel {
+            display: none;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: #f8f9fa;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+        .draft-panel.open { display: block; }
+        .draft-panel h6 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .draft-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 10px;
+            border-radius: 4px;
+            background: white;
+            border: 1px solid #e9ecef;
+            margin-bottom: 6px;
+            gap: 8px;
+        }
+        .draft-item-text {
+            font-size: 12px;
+            color: #495057;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+        }
+        .draft-item-meta {
+            font-size: 11px;
+            color: #adb5bd;
+            white-space: nowrap;
+        }
+        .draft-restore-btn {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 3px;
+            border: 1px solid #28a745;
+            background: white;
+            cursor: pointer;
+            color: #28a745;
+            white-space: nowrap;
+        }
+        .draft-restore-btn:hover { background: #e8f5e9; }
+        .draft-empty {
+            font-size: 12px;
+            color: #adb5bd;
+            text-align: center;
+            padding: 8px 0;
+        }
+        /* ── Feature 4: Copy button on textarea ────────────────────────────── */
+        .textarea-wrapper {
+            position: relative;
+        }
+        .btn-copy-body {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 11px;
+            padding: 3px 9px;
+            border-radius: 3px;
+            border: 1px solid #ced4da;
+            background: white;
+            cursor: pointer;
+            color: #6c757d;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 2;
+        }
+        .textarea-wrapper:hover .btn-copy-body { opacity: 1; }
+        /* ── Feature 5: Subject counter ────────────────────────────────────── */
+        .subject-counter {
+            font-size: 11px;
+            color: #6c757d;
+            text-align: right;
+            margin-top: 3px;
+        }
+        .subject-counter.warn { color: #e67e22; }
+        .subject-counter.limit { color: #dc3545; font-weight: bold; }
+        /* ── Feature 6: Save Draft button ──────────────────────────────────── */
+        .btn-save-draft {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            border: 1px solid #17a2b8;
+            background: white;
+            cursor: pointer;
+            color: #17a2b8;
+            float: right;
+            margin-right: 6px;
+        }
+        .btn-save-draft:hover { background: #e8f9fc; }
+        .saved-draft-notice {
+            font-size: 11px;
+            color: #17a2b8;
+            margin-top: 6px;
+            display: none;
+        }
+	    </style>
+    <link rel="stylesheet" href="{% static 'generator/theme_toggle.css' %}">
+</head>
+<body>
+
+<!-- ── Navigation bar ──────────────────────────────────────────────── -->
+{% if user.is_authenticated %}
+<nav class="navbar py-2" style="background:#2c3e50;position:sticky;top:0;z-index:1050;">
+  <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+    <span class="text-white fw-bold">BISAG-N Document Generator</span>
+    <div class="d-flex align-items-center gap-3">
+      <a href="{% url 'dashboard' %}" class="text-white text-decoration-none small">
+        📊 My Dashboard
+      </a>
+      {% if user.is_staff %}
+      <a href="/admin/" class="text-white text-decoration-none small">⚙️ Admin</a>
+      {% endif %}
+      <span class="text-white-50 small">{{ user.get_full_name|default:user.username }}</span>
+      <a href="{% url 'logout' %}" class="text-white text-decoration-none small" style="background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:20px;">Logout</a>
+      <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme" aria-pressed="false">
+        <span class="theme-toggle-track"><span class="theme-toggle-thumb"><span class="theme-emoji">☀️</span></span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+{% else %}
+<nav class="navbar py-2" style="background:#2c3e50;position:sticky;top:0;z-index:1050;">
+  <div class="container-fluid px-4 d-flex justify-content-between align-items-center">
+    <span class="text-white fw-bold">BISAG-N Document Generator</span>
+    <div class="d-flex align-items-center gap-3">
+      <a href="{% url 'login' %}" class="text-white text-decoration-none small" style="background:rgba(255,255,255,0.15);padding:4px 12px;border-radius:20px;">Login</a>
+      <a href="{% url 'register' %}" class="text-white text-decoration-none small" style="background:#27ae60;padding:4px 12px;border-radius:20px;">Register</a>
+      <button id="themeToggle" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Toggle theme" aria-pressed="false">
+        <span class="theme-toggle-track"><span class="theme-toggle-thumb"><span class="theme-emoji">☀️</span></span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<!-- Feature 1: Offline banner -->
+<div id="offlineBanner">
+    📡 No internet connection — AI generation is unavailable. Form filling still works.
+</div>
+
+<!-- <img src="{% static 'generator/bisag_img1.jpg' %}" alt="BISAG-Bg Img"> -->
+<div class="main-container">
+    <!-- Toast notification -->
+    <div id="toastMsg" class="toast-msg"></div>
+    <!-- Header -->
+    
+    <div class="header-section">
+        <img src="{% static 'generator/bisag_logo.png' %}" alt="BISAG-N Logo" style="width: 100px; height: 100px; margin: 0 auto 15px; display: block;">
+        <h1>BISAG-N Document Generator</h1>
+        <div class="subtitle">Bhaskaracharya National Institute for Space Applications and Geo-informatics</div>
+    </div>
+
+    <!-- Document Type Selector -->
+    <div class="doc-selector">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="doc-type-btn" data-type="office" onclick="selectDocType('office')">
+                    <div class="icon">📄</div>
+                    <div class="title">Office Order</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="doc-type-btn" data-type="circular" onclick="selectDocType('circular')">
+                    <div class="icon">📢</div>
+                    <div class="title">Circular</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="doc-type-btn" data-type="policy" onclick="selectDocType('policy')">
+                    <div class="icon">📜</div>
+                    <div class="title">Policy</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="doc-type-btn" data-type="advertisement" onclick="selectDocType('advertisement')">
+                    <div class="icon">📋</div>
+                    <div class="title">Advertisement</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Office Order Form -->
+    <div id="officeForm" class="form-section">
+        <h5 class="mb-3" style="color: #2c3e50; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;">
+            Office Order Form
+            <button type="button" class="btn-clear-form" onclick="clearForm('office')">🗑 Clear Form</button>
+            <button type="button" class="btn-save-draft" onclick="saveDraft('office')">💾 Save Draft</button>
+            <button type="button" class="draft-history-btn" onclick="toggleDraftPanel('office')">📋 History</button>
+        </h5>
+        <!-- Draft history panel -->
+        <div id="office_draft_panel" class="draft-panel">
+            <h6>📋 Saved Drafts — Office Order <small style="font-weight:400;color:#adb5bd;">(last 5)</small></h6>
+            <div id="office_draft_list"></div>
+        </div>
+        <form method="POST" action="{% url 'result' %}" id="officeFormEl" onsubmit="return validateForm('office')">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="form-label">Language / भाषा</label>
+                    <select name="language" id="office_language" class="form-select" onchange="updateOfficeRef()" required>
+                        <option value="en" selected>English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Date / दिनांक</label>
+                    <input type="date" name="date" id="office_date" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Reference / संदर्भ</label>
+                    <input type="text" name="reference" id="office_reference" class="form-control" value="BISAG-N/Office Order/2026/" required>
+                </div>
+            </div>
+            
+
+            <!-- <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('office_from_content')">
+                    <span>From (Recipients) / से (पद)</span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="office_from_content" class="collapsible-content">
+                    {% for designation in designations %}
+                    <div class="form-check mb-2">
+                        <input type="radio" name="from_recipients[]" value="{{ designation }}" class="form-check-input">
+                        <label class="form-check-label">{{ designation }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div> -->
+
+            <!-- From Section - Collapsible -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('office_from_content')">
+                    <span>From (Position) / से (पद) <span id="office_from_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="office_from_content" class="collapsible-content">
+                    <select name="from_position" id="office_from_select" class="form-select" required onchange="updateBadge('office_from_select','office_from_badge')">
+                        <option value="">-- Select Position --</option>
+                        {% for designation in designations %}
+                        <option value="{{ designation }}">{{ designation }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="validation-msg" id="office_from_err">⚠ Please select a From position.</div>
+            </div>
+
+            <!-- To Section - Collapsible -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('office_to_content')">
+                    <span>To (Recipients) / प्रति (प्राप्तकर्ता) <span id="office_to_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="office_to_content" class="collapsible-content">
+                    <div class="select-all-bar">
+                        <button type="button" class="btn-sel" onclick="selectAll('office_to_content','office_to_badge')">✔ Select All</button>
+                        <button type="button" class="btn-sel" onclick="deselectAll('office_to_content','office_to_badge')">✘ Deselect All</button>
+                    </div>
+                    {% for designation in designations %}
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="to_recipients[]" value="{{ designation }}" class="form-check-input" id="office_to_{{ forloop.counter }}" onchange="updateCheckCount('office_to_content','office_to_badge')">
+                        <label class="form-check-label" for="office_to_{{ forloop.counter }}">{{ designation }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="validation-msg" id="office_to_err">⚠ Please select at least one recipient.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Body Prompt / सामग्री संकेत</label>
+                <textarea name="body_prompt" id="office_body_prompt" class="form-control" rows="3" 
+                          placeholder="Enter instructions for AI to generate office order body..."
+                          oninput="updateCounter(this,'office_prompt_counter')"></textarea>
+                <div id="office_prompt_counter" class="char-counter">0 words · 0 chars</div>
+                <button type="button" class="btn btn-generate mt-2" id="office_gen_btn" onclick="generateOfficeBody()">
+                    <span class="spinner"></span>
+                    <span class="btn-loading-label">Generating…</span>
+                    <span class="btn-label">🤖 Generate Body with AI</span>
+                </button>
+                <div class="ai-error-msg" id="office_ai_error">
+                    <span class="error-icon">⚠️</span><span id="office_ai_error_text"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Office Order Body / कार्यालय आदेश सामग्री</label>
+                <div class="textarea-wrapper">
+                    <button type="button" class="btn-copy-body" onclick="copyTextarea('office_body', this)">📋 Copy</button>
+                    <textarea name="body" id="office_body" class="form-control" rows="6"
+                              placeholder="AI generated body will appear here or type manually..."
+                              oninput="updateCounter(this,'office_body_counter')" required></textarea>
+                </div>
+                <div id="office_body_counter" class="char-counter">0 words · 0 chars</div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    Preview Office Order →
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Circular Form -->
+    <div id="circularForm" class="form-section">
+        <h5 class="mb-3" style="color: #2c3e50; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;">
+            Circular Form
+            <button type="button" class="btn-clear-form" onclick="clearForm('circular')">🗑 Clear Form</button>
+            <button type="button" class="btn-save-draft" onclick="saveDraft('circular')">💾 Save Draft</button>
+            <button type="button" class="draft-history-btn" onclick="toggleDraftPanel('circular')">📋 History</button>
+        </h5>
+        <!-- Draft history panel -->
+        <div id="circular_draft_panel" class="draft-panel">
+            <h6>📋 Saved Drafts — Circular <small style="font-weight:400;color:#adb5bd;">(last 5)</small></h6>
+            <div id="circular_draft_list"></div>
+        </div>
+        <form method="POST" action="{% url 'result_circular' %}" id="circularFormEl" onsubmit="return validateForm('circular')">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Language / भाषा</label>
+                    <select name="language" id="circular_language" class="form-select" required>
+                        <option value="en" selected>English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Date / दिनांक</label>
+                    <input type="date" name="date" id="circular_date" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- From Section - Collapsible -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('circular_from_content')">
+                    <span>From (Position) / से (पद) <span id="circular_from_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="circular_from_content" class="collapsible-content">
+                    <select name="from_position" id="circular_from_select" class="form-select" required onchange="updateBadge('circular_from_select','circular_from_badge')">
+                        <option value="">-- Select Position --</option>
+                        {% for designation in designations %}
+                        <option value="{{ designation }}">{{ designation }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="validation-msg" id="circular_from_err">⚠ Please select a From position.</div>
+            </div>
+
+            <!-- To Section - Collapsible -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('circular_to_content')">
+                    <span>To (Recipients) / प्रति (प्राप्तकर्ता) <span id="circular_to_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="circular_to_content" class="collapsible-content">
+                    <div class="select-all-bar">
+                        <button type="button" class="btn-sel" onclick="selectAll('circular_to_content','circular_to_badge')">✔ Select All</button>
+                        <button type="button" class="btn-sel" onclick="deselectAll('circular_to_content','circular_to_badge')">✘ Deselect All</button>
+                    </div>
+                    {% for p in people %}
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="to[]" value="{{ p.id }}" class="form-check-input" id="circular_to_{{ p.id }}" onchange="updateCheckCount('circular_to_content','circular_to_badge')">
+                        <label class="form-check-label" for="circular_to_{{ p.id }}">
+                            <strong>{{ p.name_en }}</strong> ({{ p.designation_en }})
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="validation-msg" id="circular_to_err">⚠ Please select at least one recipient.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Subject / विषय</label>
+                <input type="text" name="subject" id="circular_subject" class="form-control" placeholder="Enter subject of circular" oninput="updateSubjectCounter(this,'circular_subject_counter');saveFormData()" required>
+                <div id="circular_subject_counter" class="subject-counter">0 / 120 chars</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Body Prompt / सामग्री संकेत</label>
+                <textarea name="body_prompt" id="circular_body_prompt" class="form-control" rows="3" 
+                          placeholder="Enter instructions for AI to generate circular body..."
+                          oninput="updateCounter(this,'circular_prompt_counter')"></textarea>
+                <div id="circular_prompt_counter" class="char-counter">0 words · 0 chars</div>
+                <button type="button" class="btn btn-generate mt-2" id="circular_gen_btn" onclick="generateCircularBody()">
+                    <span class="spinner"></span>
+                    <span class="btn-loading-label">Generating…</span>
+                    <span class="btn-label">🤖 Generate Body with AI</span>
+                </button>
+                <div class="ai-error-msg" id="circular_ai_error">
+                    <span class="error-icon">⚠️</span><span id="circular_ai_error_text"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Circular Body / परिपत्र सामग्री</label>
+                <div class="textarea-wrapper">
+                    <button type="button" class="btn-copy-body" onclick="copyTextarea('circular_body', this)">📋 Copy</button>
+                    <textarea name="body" id="circular_body" class="form-control" rows="6"
+                              placeholder="AI generated body will appear here or type manually..."
+                              oninput="updateCounter(this,'circular_body_counter')" required></textarea>
+                </div>
+                <div id="circular_body_counter" class="char-counter">0 words · 0 chars</div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    Preview Circular →
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Policy Form -->
+    <div id="policyForm" class="form-section">
+        <h5 class="mb-3" style="color: #2c3e50; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;">
+            Policy Form
+            <button type="button" class="btn-clear-form" onclick="clearForm('policy')">🗑 Clear Form</button>
+            <button type="button" class="btn-save-draft" onclick="saveDraft('policy')">💾 Save Draft</button>
+            <button type="button" class="draft-history-btn" onclick="toggleDraftPanel('policy')">📋 History</button>
+        </h5>
+        <!-- Draft history panel -->
+        <div id="policy_draft_panel" class="draft-panel">
+            <h6>📋 Saved Drafts — Policy <small style="font-weight:400;color:#adb5bd;">(last 5)</small></h6>
+            <div id="policy_draft_list"></div>
+        </div>
+        <form method="POST" action="{% url 'result_policy' %}" enctype="multipart/form-data" id="policyFormEl" onsubmit="return validateForm('policy')">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Language / भाषा</label>
+                    <select name="language" id="policy_language" class="form-select" required>
+                        <option value="en" selected>English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Date / दिनांक</label>
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- From Section - Collapsible -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('policy_from_content')">
+                    <span>From (Position) / से (पद) <span id="policy_from_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="policy_from_content" class="collapsible-content">
+                    <select name="from_position" id="policy_from_select" class="form-select" required onchange="updateBadge('policy_from_select','policy_from_badge')">
+                        <option value="">-- Select Position --</option>
+                        {% for designation in designations %}
+                        <option value="{{ designation }}">{{ designation }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="validation-msg" id="policy_from_err">⚠ Please select a From position.</div>
+            </div>
+
+            <!-- To Section - Collapsible -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('policy_to_content')">
+                    <span>To (Recipients) / प्रति (प्राप्तकर्ता) <span id="policy_to_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="policy_to_content" class="collapsible-content">
+                    <div class="select-all-bar">
+                        <button type="button" class="btn-sel" onclick="selectAll('policy_to_content','policy_to_badge')">✔ Select All</button>
+                        <button type="button" class="btn-sel" onclick="deselectAll('policy_to_content','policy_to_badge')">✘ Deselect All</button>
+                    </div>
+                    {% for designation in designations %}
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="to_recipients[]" value="{{ designation }}" class="form-check-input" id="policy_to_{{ forloop.counter }}" onchange="updateCheckCount('policy_to_content','policy_to_badge')">
+                        <label class="form-check-label" for="policy_to_{{ forloop.counter }}">{{ designation }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="validation-msg" id="policy_to_err">⚠ Please select at least one recipient.</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Subject / विषय</label>
+                <input type="text" name="subject" id="policy_subject" class="form-control" placeholder="Enter subject of policy" oninput="updateSubjectCounter(this,'policy_subject_counter');saveFormData()" required>
+                <div id="policy_subject_counter" class="subject-counter">0 / 120 chars</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Body Prompt / सामग्री संकेत</label>
+                <textarea name="body_prompt" id="policy_body_prompt" class="form-control" rows="3" 
+                          placeholder="Enter instructions for AI to generate policy body..."
+                          oninput="updateCounter(this,'policy_prompt_counter')"></textarea>
+                <div id="policy_prompt_counter" class="char-counter">0 words · 0 chars</div>
+                <button type="button" class="btn btn-generate mt-2" id="policy_gen_btn" onclick="generatePolicyBody()">
+                    <span class="spinner"></span>
+                    <span class="btn-loading-label">Generating…</span>
+                    <span class="btn-label">🤖 Generate Body with AI</span>
+                </button>
+                <div class="ai-error-msg" id="policy_ai_error">
+                    <span class="error-icon">⚠️</span><span id="policy_ai_error_text"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Policy Body / नीति सामग्री</label>
+                <div class="textarea-wrapper">
+                    <button type="button" class="btn-copy-body" onclick="copyTextarea('policy_body', this)">📋 Copy</button>
+                    <textarea name="body" id="policy_body" class="form-control" rows="6"
+                              placeholder="AI generated body will appear here or type manually..."
+                              oninput="updateCounter(this,'policy_body_counter')" required></textarea>
+                </div>
+                <div id="policy_body_counter" class="char-counter">0 words · 0 chars</div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Attached PDF Name / संलग्न पीडीएफ नाम</label>
+                <input type="text" name="attached_pdf_name" class="form-control" 
+                       placeholder="e.g., BISAG-N GeoAI Policy" required>
+                <small class="text-muted">This name will be displayed as "Attached: {name}" on the first page</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Upload PDF (for second page) / पीडीएफ अपलोड करें</label>
+                <input type="file" name="policy_pdf" id="policy_pdf_input" class="form-control" accept="application/pdf" onchange="validatePdfUpload(this)">
+                <small class="text-muted">Upload a PDF file that will be attached as the second page (max 10 MB)</small>
+                <div id="pdf_upload_msg" style="font-size:12px; margin-top:4px;"></div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    Preview Policy →
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Advertisement Form -->
+    <div id="advertisementForm" class="form-section">
+        <h5 class="mb-3" style="color: #2c3e50; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;">
+            Advertisement Form (Hiring)
+            <button type="button" class="btn-clear-form" onclick="clearAdvertisementForm()">🗑 Clear Form</button>
+        </h5>
+        <form method="POST" action="{% url 'result_advertisement' %}" id="advertisementFormEl" onsubmit="return validateAdvertisementForm()">
+            {% csrf_token %}
+            
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Language / भाषा</label>
+                    <select name="language" id="ad_language" class="form-select" required>
+                        <option value="en" selected>English</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Date to Apply / आवेदन की अंतिम तिथि</label>
+                    <input type="date" name="last_date" id="ad_last_date" class="form-control" required>
+                </div>
+            </div>
+
+            <!-- Designation Dropdown -->
+            <div class="mb-3">
+                <label class="form-label">Designation / पद</label>
+                <select name="designation" id="ad_designation" class="form-select" required>
+                    <option value="">-- Select Designation --</option>
+                    {% for d in advertisement_data.designations %}
+                    <option value="{{ d.value }}">{{ d.label_en }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Number of Requirements -->
+            <div class="mb-3">
+                <label class="form-label">Number of Requirements / आवश्यकताओं की संख्या</label>
+                <div class="d-flex flex-wrap gap-2 mb-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(1)">1</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(2)">2</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(5)">5</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(10)">10</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(20)">20</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(50)">50</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm req-btn" onclick="setRequirements(100)">100</button>
+                </div>
+                <input type="number" name="num_requirements" id="ad_num_requirements" class="form-control" min="1" value="1" required style="max-width: 150px;">
+            </div>
+
+            <!-- Educational Qualification Multi-select -->
+            <div class="collapsible-section mb-3">
+                <div class="collapsible-header" onclick="toggleCollapse('ad_qual_content')">
+                    <span>Educational Qualification / शैक्षिक योग्यता <span id="ad_qual_badge" class="collapsible-selected" style="display:none;"></span></span>
+                    <span class="arrow">▶</span>
+                </div>
+                <div id="ad_qual_content" class="collapsible-content">
+                    <div class="select-all-bar">
+                        <button type="button" class="btn-sel" onclick="selectAll('ad_qual_content','ad_qual_badge')">✔ Select All</button>
+                        <button type="button" class="btn-sel" onclick="deselectAll('ad_qual_content','ad_qual_badge')">✘ Deselect All</button>
+                    </div>
+                    {% for q in advertisement_data.qualifications %}
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="qualifications[]" value="{{ q.value }}" class="form-check-input" id="ad_qual_{{ forloop.counter }}" onchange="updateCheckCount('ad_qual_content','ad_qual_badge')">
+                        <label class="form-check-label" for="ad_qual_{{ forloop.counter }}">{{ q.label_en }}</label>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="validation-msg" id="ad_qual_err">⚠ Please select at least one qualification.</div>
+            </div>
+
+            <!-- CTC Selection -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">CTC Type / वेतन प्रकार</label>
+                    <select name="ctc_type" id="ad_ctc_type" class="form-select" required onchange="updateCtcOptions()">
+                        <option value="monthly">CTC Per Month / प्रति माह</option>
+                        <option value="yearly">CTC Per Year / प्रति वर्ष</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">CTC Value / वेतन राशि</label>
+                    <select name="ctc_value" id="ad_ctc_value" class="form-select" required>
+                        <!-- Monthly options (default) -->
+                        <option value="0">Unpaid</option>
+                        <option value="30000">30k (₹30,000)</option>
+                        <option value="35000">35k (₹35,000)</option>
+                        <option value="40000">40k (₹40,000)</option>
+                        <option value="45000">45k (₹45,000)</option>
+                        <option value="50000">50k (₹50,000)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Years of Experience -->
+            <div class="mb-3">
+                <label class="form-label">Years of Experience / अनुभव (वर्ष)</label>
+                <input type="number" name="years_experience" id="ad_years_experience" class="form-control" min="0" value="0" required style="max-width: 150px;">
+            </div>
+
+            <!-- Government Employee Benefit -->
+            <div class="mb-3">
+                <label class="form-label">Government Employee Benefit / सरकारी कर्मचारी लाभ</label>
+                <div class="form-check form-check-inline">
+                    <input type="radio" name="govt_benefit" value="yes" class="form-check-input" id="ad_govt_yes">
+                    <label class="form-check-label" for="ad_govt_yes">Yes / हाँ</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input type="radio" name="govt_benefit" value="no" class="form-check-input" id="ad_govt_no" checked>
+                    <label class="form-check-label" for="ad_govt_no">No / नहीं</label>
+                </div>
+            </div>
+
+            <!-- Email ID -->
+            <div class="mb-3">
+                <label class="form-label">Email ID / ईमेल आईडी</label>
+                <input type="email" name="email_id" id="ad_email_id" class="form-control" placeholder="hr@bisag-n.gov.in" required>
+                <small class="text-muted">This email will be displayed in BOLD in the document</small>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary">
+                    Preview Advertisement →
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<script>
+// ── Utility: word/char counter ───────────────────────────────────────────────
+function updateCounter(textarea, counterId) {
+    const text = textarea.value;
+    const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+    const chars = text.length;
+    const el = document.getElementById(counterId);
+    el.textContent = `${words} words · ${chars} chars`;
+    el.className = 'char-counter' + (chars > 1500 ? ' limit' : chars > 1000 ? ' warn' : '');
+}
+
+// ── Utility: show selected value in collapsible badge ────────────────────────
+function updateBadge(selectId, badgeId) {
+    const sel = document.getElementById(selectId);
+    const badge = document.getElementById(badgeId);
+    if (sel && badge) {
+        if (sel.value) {
+            badge.textContent = '✔ ' + sel.options[sel.selectedIndex].text;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+// ── Utility: count checked boxes and update badge ────────────────────────────
+function updateCheckCount(sectionId, badgeId) {
+    const count = document.querySelectorAll(`#${sectionId} input[type="checkbox"]:checked`).length;
+    const badge = document.getElementById(badgeId);
+    if (badge) {
+        if (count > 0) {
+            badge.textContent = `✔ ${count} selected`;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+// ── Utility: select / deselect all checkboxes in a section ──────────────────
+function selectAll(sectionId, badgeId) {
+    document.querySelectorAll(`#${sectionId} input[type="checkbox"]`).forEach(cb => cb.checked = true);
+    if (badgeId) updateCheckCount(sectionId, badgeId);
+    showToast('All recipients selected ✔');
+}
+function deselectAll(sectionId, badgeId) {
+    document.querySelectorAll(`#${sectionId} input[type="checkbox"]`).forEach(cb => cb.checked = false);
+    if (badgeId) updateCheckCount(sectionId, badgeId);
+    showToast('All recipients deselected ✘');
+}
+
+// ── Utility: toast notification ─────────────────────────────────────────────
+let _toastTimer = null;
+function showToast(msg, duration = 2500) {
+    const t = document.getElementById('toastMsg');
+    t.textContent = msg;
+    t.classList.remove('toast-error', 'toast-warn');
+    if (msg.startsWith('❌'))      t.classList.add('toast-error');
+    else if (msg.startsWith('⚠')) t.classList.add('toast-warn');
+    t.classList.add('show');
+    clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(() => {
+        t.classList.remove('show', 'toast-error', 'toast-warn');
+    }, duration);
+}
+
+// ── Utility: loading spinner toggle ─────────────────────────────────────────
+function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+}
+
+// ── Utility: show/hide inline AI error below generate button ─────────────────
+function showAiError(type, msg) {
+    const box  = document.getElementById(`${type}_ai_error`);
+    const text = document.getElementById(`${type}_ai_error_text`);
+    if (!box || !text) return;
+    if (!msg) {
+        box.classList.remove('show');
+        text.textContent = '';
+    } else {
+        text.textContent = msg;
+        box.classList.add('show');
+    }
+}
+
+// ── Utility: PDF upload validation ──────────────────────────────────────────
+function validatePdfUpload(input) {
+    const msgEl = document.getElementById('pdf_upload_msg');
+    if (!input.files.length) { msgEl.textContent = ''; return true; }
+    const file = input.files[0];
+    const maxSize = 10 * 1024 * 1024; // 10 MB
+    if (file.type !== 'application/pdf') {
+        msgEl.textContent = '❌ Only PDF files are allowed.';
+        msgEl.style.color = '#dc3545';
+        input.value = '';
+        return false;
+    }
+    if (file.size > maxSize) {
+        msgEl.textContent = `❌ File too large (${(file.size/1024/1024).toFixed(1)} MB). Max is 10 MB.`;
+        msgEl.style.color = '#dc3545';
+        input.value = '';
+        return false;
+    }
+    msgEl.textContent = `✅ ${file.name} (${(file.size/1024/1024).toFixed(2)} MB)`;
+    msgEl.style.color = '#28a745';
+    return true;
+}
+
+// ── Form validation before submit ───────────────────────────────────────────
+function validateForm(type) {
+    let valid = true;
+
+    const fromSelectId = `${type}_from_select`;
+    const fromErrId = `${type}_from_err`;
+    const toSectionId = type === 'office' ? 'office_to_content' : type === 'circular' ? 'circular_to_content' : 'policy_to_content';
+    const toErrId = `${type}_to_err`;
+
+    // Validate From
+    const fromEl = document.getElementById(fromSelectId);
+    const fromErr = document.getElementById(fromErrId);
+    if (fromEl && !fromEl.value) {
+        fromErr.style.display = 'block';
+        // Open the collapsible so user sees it
+        const content = document.getElementById(`${type}_from_content`);
+        if (content && !content.classList.contains('expanded')) {
+            content.classList.add('expanded');
+            content.previousElementSibling.classList.add('expanded');
+        }
+        valid = false;
+    } else if (fromErr) {
+        fromErr.style.display = 'none';
+    }
+
+    // Validate To (at least one checkbox)
+    const toChecked = document.querySelectorAll(`#${toSectionId} input[type="checkbox"]:checked`).length;
+    const toErr = document.getElementById(toErrId);
+    if (toErr) {
+        if (toChecked === 0) {
+            toErr.style.display = 'block';
+            const content = document.getElementById(toSectionId);
+            if (content && !content.classList.contains('expanded')) {
+                content.classList.add('expanded');
+                content.previousElementSibling.classList.add('expanded');
+            }
+            valid = false;
+        } else {
+            toErr.style.display = 'none';
+        }
+    }
+
+    if (!valid) showToast('⚠️ Please fix the errors above before submitting.');
+    return valid;
+}
+
+// ── Clear Form ───────────────────────────────────────────────────────────────
+function clearForm(type) {
+    if (!confirm('Clear all ' + type.charAt(0).toUpperCase() + type.slice(1) + ' form data? This cannot be undone.')) return;
+
+    // Reset text fields
+    const fields = [`${type}_body_prompt`, `${type}_body`];
+    if (type === 'circular' || type === 'policy') fields.push(`${type}_subject`);
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; }
+    });
+
+    // Reset counters
+    const counterMap = {
+        [`${type}_body_prompt`]: `${type}_prompt_counter`,
+        [`${type}_body`]: `${type}_body_counter`,
+    };
+    Object.entries(counterMap).forEach(([id, cid]) => {
+        const el = document.getElementById(id);
+        const counter = document.getElementById(cid);
+        if (el && counter) updateCounter(el, cid);
+    });
+
+    // Reset selects
+    const fromSel = document.getElementById(`${type}_from_select`);
+    if (fromSel) { fromSel.value = ''; updateBadge(`${type}_from_select`, `${type}_from_badge`); }
+
+    // Uncheck all checkboxes
+    const toSection = type === 'circular' ? 'circular_to_content' : `${type}_to_content`;
+    document.querySelectorAll(`#${toSection} input[type="checkbox"]`).forEach(cb => cb.checked = false);
+    updateCheckCount(toSection, `${type}_to_badge`);
+
+    // Clear date to today
+    const dateEl = document.getElementById(`${type}_date`) || document.querySelector(`#${type}Form input[type="date"]`);
+    if (dateEl) dateEl.value = new Date().toISOString().split('T')[0];
+
+    // Clear localStorage
+    clearFormStorage(type);
+
+    showToast('🗑 Form cleared!');
+}
+
+// ── DOMContentLoaded ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+    // Auto-set today's date
+    const today = new Date().toISOString().split('T')[0];
+    document.querySelectorAll('input[type="date"]').forEach(input => {
+        if (!input.value) input.value = today;
+    });
+
+    // Auto-update year in Office Order reference field
+    const currentYear = new Date().getFullYear();
+    const refField = document.getElementById('office_reference');
+    if (refField) {
+        refField.value = refField.value.replace(/\d{4}/, currentYear);
+    }
+
+    // Restore saved form data
+    restoreFormData();
+
+    // Determine active tab: URL slug takes priority over localStorage
+    const pathSlug = window.location.pathname.replace(/\//g, '');
+    const typeFromUrl = SLUG_TO_TYPE[pathSlug];
+    const lastTab = typeFromUrl;
+
+    if (lastTab) {
+        selectDocType(lastTab, !typeFromUrl); // push state only if not already on a slug URL
+    } else {
+        // No tab selected yet — set base history state so popstate works from home
+        if (history.replaceState) {
+            history.replaceState({ docType: null }, '', window.location.pathname);
+        }
+    }
+
+    // If we came in via a slug URL, replace the state so back button goes to /
+    if (typeFromUrl && history.replaceState) {
+        history.replaceState({ docType: typeFromUrl }, '', window.location.pathname);
+    }
+});
+
+// ── localStorage: save & restore form data ───────────────────────────────────
+const LS_FIELDS = [
+    'office_body_prompt', 'office_body',
+    'circular_body_prompt', 'circular_body', 'circular_subject',
+    'policy_body_prompt', 'policy_body', 'policy_subject'
+];
+
+const COUNTER_MAP = {
+    'office_body_prompt': 'office_prompt_counter',
+    'office_body': 'office_body_counter',
+    'circular_body_prompt': 'circular_prompt_counter',
+    'circular_body': 'circular_body_counter',
+    'policy_body_prompt': 'policy_prompt_counter',
+    'policy_body': 'policy_body_counter',
+};
+
+function saveFormData() {
+    LS_FIELDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) localStorage.setItem('form_' + id, el.value);
+    });
+}
+
+function restoreFormData() {
+    LS_FIELDS.forEach(id => {
+        const el = document.getElementById(id);
+        const saved = localStorage.getItem('form_' + id);
+        if (el && saved) {
+            el.value = saved;
+            if (COUNTER_MAP[id]) updateCounter(el, COUNTER_MAP[id]);
+        }
+    });
+}
+
+function clearFormStorage(prefix) {
+    LS_FIELDS.filter(id => id.startsWith(prefix)).forEach(id => localStorage.removeItem('form_' + id));
+}
+
+// Auto-save on input for all textareas
+document.querySelectorAll('textarea').forEach(ta => ta.addEventListener('input', saveFormData));
+
+// Clear saved data on form submit; also save last active tab
+document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function () {
+        const section = this.closest('.form-section');
+        if (!section) return;
+        const id = section.id;
+        if (id === 'officeForm') clearFormStorage('office');
+        else if (id === 'circularForm') clearFormStorage('circular');
+        else if (id === 'policyForm') clearFormStorage('policy');
+    });
+});
+
+// ── updateOfficeRef ──────────────────────────────────────────────────────────
+function updateOfficeRef() {
+    const lang = document.getElementById('office_language').value;
+    const refField = document.getElementById('office_reference');
+    const year = new Date().getFullYear();
+    refField.value = lang === 'hi'
+        ? `बायसेग-एन/कार्यालय आदेश/${year}/`
+        : `BISAG-N/Office Order/${year}/`;
+}
+
+// ── Collapsible sections ─────────────────────────────────────────────────────
+function toggleCollapse(contentId) {
+    const content = document.getElementById(contentId);
+    const header = event.currentTarget;
+    header.classList.toggle('expanded');
+    content.classList.toggle('expanded');
+
+    if (header.classList.contains('expanded') && content.querySelector('select')) {
+        setTimeout(() => {
+            const select = content.querySelector('select');
+            if (select && select.showPicker) {
+                select.showPicker();
+            } else if (select) {
+                select.focus();
+                select.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            }
+        }, 320);
+    }
+}
+
+// ── Document type selector ───────────────────────────────────────────────────
+const DOC_SLUGS = { office: 'office-order', circular: 'circular', policy: 'policy', advertisement: 'advertisement' };
+const SLUG_TO_TYPE = { 'office-order': 'office', 'circular': 'circular', 'policy': 'policy', 'advertisement': 'advertisement' };
+
+function selectDocType(type, pushState = true) {
+    document.querySelectorAll('.doc-type-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.doc-type-btn[data-type="${type}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+    document.querySelectorAll('.form-section').forEach(form => form.classList.remove('active'));
+    if (type === 'office') document.getElementById('officeForm').classList.add('active');
+    else if (type === 'circular') document.getElementById('circularForm').classList.add('active');
+    else if (type === 'policy') document.getElementById('policyForm').classList.add('active');
+    else if (type === 'advertisement') document.getElementById('advertisementForm').classList.add('active');
+    localStorage.setItem('last_active_tab', type);
+
+    // Update browser URL without page reload
+    if (pushState && history.pushState) {
+        const slug = DOC_SLUGS[type] || type;
+        const newUrl = window.location.pathname.split('/').filter(Boolean).length > 0
+            ? '/' + slug + '/'
+            : '/' + slug + '/';
+        history.pushState({ docType: type }, '', newUrl);
+        document.title = `BISAG-N – ${type === 'office' ? 'Office Order' : type.charAt(0).toUpperCase() + type.slice(1)}`;
+    }
+}
+
+// Handle browser Back / Forward navigation
+window.addEventListener('popstate', function (e) {
+    if (e.state && e.state.docType) {
+        selectDocType(e.state.docType, false);
+    } else {
+        // Back to root → deselect all
+        document.querySelectorAll('.doc-type-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.form-section').forEach(form => form.classList.remove('active'));
+        document.title = 'BISAG-N Document Generator';
+    }
+});
+
+// ── AI Generate: Office Order ────────────────────────────────────────────────
+function generateOfficeBody() {
+    const prompt = document.getElementById('office_body_prompt').value.trim();
+    const lang = document.getElementById('office_language').value;
+    if (!prompt || !lang) { showToast('⚠️ Please select language and enter a prompt!'); return; }
+
+    setLoading('office_gen_btn', true);
+    showAiError('office', '');   // clear previous error
+
+    const formData = new FormData();
+    formData.append('body_prompt', prompt);
+    formData.append('language', lang);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+    fetch('{% url "generate_body" %}', { method: 'POST', body: formData })
+        .then(res => res.text().then(text => ({ ok: res.ok, status: res.status, text })))
+        .then(({ ok, status, text }) => {
+            if (!ok) {
+                showAiError('office', text || `Server error ${status}. Please try again.`);
+                return;
+            }
+            const ta = document.getElementById('office_body');
+            ta.value = text;
+            updateCounter(ta, 'office_body_counter');
+            saveFormData();
+            showToast('✅ Body generated!');
+        })
+        .catch(() => showAiError('office', 'No internet connection. Please check your network and try again.'))
+        .finally(() => setLoading('office_gen_btn', false));
+}
+
+// ── AI Generate: Circular ────────────────────────────────────────────────────
+function generateCircularBody() {
+    const prompt = document.getElementById('circular_body_prompt').value.trim();
+    const lang = document.getElementById('circular_language').value;
+    if (!prompt || !lang) { showToast('⚠️ Please select language and enter a prompt!'); return; }
+
+    setLoading('circular_gen_btn', true);
+    showAiError('circular', '');
+
+    const formData = new FormData();
+    formData.append('body_prompt', prompt);
+    formData.append('language', lang);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+    fetch('{% url "generate_circular_body" %}', { method: 'POST', body: formData })
+        .then(res => res.text().then(text => ({ ok: res.ok, status: res.status, text })))
+        .then(({ ok, status, text }) => {
+            if (!ok) {
+                showAiError('circular', text || `Server error ${status}. Please try again.`);
+                return;
+            }
+            const ta = document.getElementById('circular_body');
+            ta.value = text;
+            updateCounter(ta, 'circular_body_counter');
+            saveFormData();
+            showToast('✅ Body generated!');
+        })
+        .catch(() => showAiError('circular', 'No internet connection. Please check your network and try again.'))
+        .finally(() => setLoading('circular_gen_btn', false));
+}
+
+// ── AI Generate: Policy ──────────────────────────────────────────────────────
+function generatePolicyBody() {
+    const prompt = document.getElementById('policy_body_prompt').value.trim();
+    const lang = document.getElementById('policy_language').value;
+    if (!prompt || !lang) { showToast('⚠️ Please select language and enter a prompt!'); return; }
+
+    setLoading('policy_gen_btn', true);
+    showAiError('policy', '');
+
+    const formData = new FormData();
+    formData.append('body_prompt', prompt);
+    formData.append('language', lang);
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+    fetch('{% url "generate_policy_body" %}', { method: 'POST', body: formData })
+        .then(res => res.text().then(text => ({ ok: res.ok, status: res.status, text })))
+        .then(({ ok, status, text }) => {
+            if (!ok) {
+                showAiError('policy', text || `Server error ${status}. Please try again.`);
+                return;
+            }
+            const ta = document.getElementById('policy_body');
+            ta.value = text;
+            updateCounter(ta, 'policy_body_counter');
+            saveFormData();
+            showToast('✅ Body generated!');
+        })
+        .catch(() => showAiError('policy', 'No internet connection. Please check your network and try again.'))
+        .finally(() => setLoading('policy_gen_btn', false));
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Feature 1: Offline / Online detection
+// ════════════════════════════════════════════════════════════════════════════
+function setOfflineMode(isOffline) {
+    const banner = document.getElementById('offlineBanner');
+    if (isOffline) {
+        banner.classList.add('show');
+        document.body.classList.add('offline-mode');
+    } else {
+        banner.classList.remove('show');
+        document.body.classList.remove('offline-mode');
+        showToast('✅ Back online! AI generation is available.', 3000);
+    }
+}
+window.addEventListener('offline', () => setOfflineMode(true));
+window.addEventListener('online',  () => setOfflineMode(false));
+// Check on page load
+if (!navigator.onLine) setOfflineMode(true);
+
+// ════════════════════════════════════════════════════════════════════════════
+// Feature 3: Draft history — save / restore / display last 5 per doc type
+// ════════════════════════════════════════════════════════════════════════════
+const DRAFT_MAX = 5;
+
+function saveDraft(type) {
+    const bodyEl  = document.getElementById(`${type}_body`);
+    const promptEl = document.getElementById(`${type}_body_prompt`);
+    const subjectEl = type !== 'office' ? document.getElementById(`${type}_subject`) : null;
+
+    const body = bodyEl ? bodyEl.value.trim() : '';
+    if (!body) { showToast('⚠️ Body is empty — nothing to save.'); return; }
+
+    const draft = {
+        ts: Date.now(),
+        body,
+        prompt: promptEl ? promptEl.value.trim() : '',
+        subject: (type !== 'office' && subjectEl) ? subjectEl.value.trim() : '',
+        label: (subjectEl && subjectEl.value.trim())
+            ? subjectEl.value.trim()
+            : (body.substring(0, 60) + (body.length > 60 ? '…' : '')),
+    };
+
+    const key = `drafts_${type}`;
+    let drafts = [];
+    try { drafts = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e) {}
+    drafts.unshift(draft);
+    if (drafts.length > DRAFT_MAX) drafts = drafts.slice(0, DRAFT_MAX);
+    localStorage.setItem(key, JSON.stringify(drafts));
+
+    showToast('💾 Draft saved!', 2500);
+    renderDraftPanel(type);
+}
+
+function toggleDraftPanel(type) {
+    const panel = document.getElementById(`${type}_draft_panel`);
+    const isOpen = panel.classList.contains('open');
+    if (!isOpen) renderDraftPanel(type);
+    panel.classList.toggle('open', !isOpen);
+}
+
+function renderDraftPanel(type) {
+    const listEl = document.getElementById(`${type}_draft_list`);
+    if (!listEl) return;
+    let drafts = [];
+    try { drafts = JSON.parse(localStorage.getItem(`drafts_${type}`) || '[]'); } catch(e) {}
+
+    if (!drafts.length) {
+        listEl.innerHTML = '<div class="draft-empty">No saved drafts yet. Click 💾 Save Draft to save one.</div>';
+        return;
+    }
+
+    listEl.innerHTML = drafts.map((d, i) => {
+        const dt = new Date(d.ts);
+        const dateStr = dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' })
+                      + ' ' + dt.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+        return `<div class="draft-item">
+            <div>
+                <div class="draft-item-text" title="${d.label}">${d.label}</div>
+                <div class="draft-item-meta">${dateStr}</div>
+            </div>
+            <button class="draft-restore-btn" onclick="restoreDraft('${type}', ${i})">↩ Restore</button>
+        </div>`;
+    }).join('');
+}
+
+function restoreDraft(type, index) {
+    let drafts = [];
+    try { drafts = JSON.parse(localStorage.getItem(`drafts_${type}`) || '[]'); } catch(e) {}
+    const d = drafts[index];
+    if (!d) return;
+
+    const bodyEl   = document.getElementById(`${type}_body`);
+    const promptEl = document.getElementById(`${type}_body_prompt`);
+    const subjectEl = type !== 'office' ? document.getElementById(`${type}_subject`) : null;
+
+    if (bodyEl)   { bodyEl.value = d.body; updateCounter(bodyEl, `${type}_body_counter`); }
+    if (promptEl && d.prompt) { promptEl.value = d.prompt; updateCounter(promptEl, `${type}_prompt_counter`); }
+    if (subjectEl && d.subject) {
+        subjectEl.value = d.subject;
+        updateSubjectCounter(subjectEl, `${type}_subject_counter`);
+    }
+
+    saveFormData();
+    showToast('↩ Draft restored!', 2500);
+    // Close panel after restore
+    document.getElementById(`${type}_draft_panel`).classList.remove('open');
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Feature 4: Copy button on body textarea
+// ════════════════════════════════════════════════════════════════════════════
+function copyTextarea(textareaId, btn) {
+    const ta = document.getElementById(textareaId);
+    if (!ta || !ta.value.trim()) { showToast('⚠️ Nothing to copy.'); return; }
+    navigator.clipboard.writeText(ta.value.trim()).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copied!';
+        btn.style.opacity = '1';
+        setTimeout(() => { btn.innerHTML = orig; btn.style.opacity = ''; }, 2000);
+    }).catch(() => showToast('❌ Copy failed. Please copy manually.', 3000));
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// Feature 5: Subject field character counter
+// ════════════════════════════════════════════════════════════════════════════
+const SUBJECT_MAX = 120;
+function updateSubjectCounter(input, counterId) {
+    const len = input.value.length;
+    const el = document.getElementById(counterId);
+    if (!el) return;
+    el.textContent = `${len} / ${SUBJECT_MAX} chars`;
+    el.className = 'subject-counter' + (len > SUBJECT_MAX ? ' limit' : len > 90 ? ' warn' : '');
+}
+// Initialise counters on load
+document.addEventListener('DOMContentLoaded', function() {
+    ['circular', 'policy'].forEach(type => {
+        const el = document.getElementById(`${type}_subject`);
+        const saved = localStorage.getItem(`form_${type}_subject`);
+        if (el && saved) {
+            el.value = saved;
+            updateSubjectCounter(el, `${type}_subject_counter`);
+        } else if (el) {
+            updateSubjectCounter(el, `${type}_subject_counter`);
+        }
+    });
+});
+
+// ════════════════════════════════════════════════════════════════════════════
+// Feature 6: Save Draft also stores full form snapshot (body + prompt + subject)
+// (saveDraft above already handles this — body snapshot is the primary storage)
+// The restore function rebuilds prompt + subject fields from the snapshot.
+// ════════════════════════════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════════════════════
+// Advertisement Form Functions
+// ════════════════════════════════════════════════════════════════════════════
+
+// Set requirements via quick-select buttons
+function setRequirements(value) {
+    document.getElementById('ad_num_requirements').value = value;
+    // Highlight active button
+    document.querySelectorAll('.req-btn').forEach(btn => {
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-outline-secondary');
+    });
+    event.target.classList.remove('btn-outline-secondary');
+    event.target.classList.add('btn-secondary');
+}
+
+// Update CTC options based on selected type
+function updateCtcOptions() {
+    const ctcType = document.getElementById('ad_ctc_type').value;
+    const ctcSelect = document.getElementById('ad_ctc_value');
+    
+    if (ctcType === 'monthly') {
+        ctcSelect.innerHTML = `
+            <option value="30000">30k (₹30,000)</option>
+            <option value="35000">35k (₹35,000)</option>
+            <option value="40000">40k (₹40,000)</option>
+            <option value="45000">45k (₹45,000)</option>
+            <option value="50000">50k (₹50,000)</option>
+        `;
+    } else {
+        ctcSelect.innerHTML = `
+            <option value="360000">3.6L (₹3,60,000)</option>
+            <option value="420000">4.2L (₹4,20,000)</option>
+            <option value="480000">4.8L (₹4,80,000)</option>
+            <option value="540000">5.4L (₹5,40,000)</option>
+            <option value="600000">6.0L (₹6,00,000)</option>
+        `;
+    }
+}
+
+// Validate advertisement form
+function validateAdvertisementForm() {
+    let valid = true;
+    
+    // Check designation
+    const designation = document.getElementById('ad_designation').value;
+    if (!designation) {
+        showToast('⚠️ Please select a designation.');
+        valid = false;
+    }
+    
+    // Check qualifications (at least one)
+    const qualChecked = document.querySelectorAll('#ad_qual_content input[type="checkbox"]:checked').length;
+    const qualErr = document.getElementById('ad_qual_err');
+    if (qualChecked === 0) {
+        qualErr.style.display = 'block';
+        const content = document.getElementById('ad_qual_content');
+        if (content && !content.classList.contains('expanded')) {
+            content.classList.add('expanded');
+            content.previousElementSibling.classList.add('expanded');
+        }
+        valid = false;
+    } else {
+        qualErr.style.display = 'none';
+    }
+    
+    // Check email
+    const email = document.getElementById('ad_email_id').value;
+    if (!email || !email.includes('@')) {
+        showToast('⚠️ Please enter a valid email address.');
+        valid = false;
+    }
+    
+    // Check last date
+    const lastDate = document.getElementById('ad_last_date').value;
+    if (!lastDate) {
+        showToast('⚠️ Please select the last date to apply.');
+        valid = false;
+    }
+    
+    if (!valid) showToast('⚠️ Please fix the errors above before submitting.');
+    return valid;
+}
+
+// Clear advertisement form
+function clearAdvertisementForm() {
+    if (!confirm('Clear all Advertisement form data? This cannot be undone.')) return;
+    
+    document.getElementById('ad_designation').value = '';
+    document.getElementById('ad_num_requirements').value = '1';
+    document.getElementById('ad_ctc_type').value = 'monthly';
+    updateCtcOptions();
+    document.getElementById('ad_years_experience').value = '0';
+    document.getElementById('ad_govt_no').checked = true;
+    document.getElementById('ad_email_id').value = '';
+    
+    // Reset date to a week from now
+    const nextWeek = new Date();
+    nextWeek.setDate(nextWeek.getDate() + 7);
+    document.getElementById('ad_last_date').value = nextWeek.toISOString().split('T')[0];
+    
+    // Uncheck qualifications
+    document.querySelectorAll('#ad_qual_content input[type="checkbox"]').forEach(cb => cb.checked = false);
+    updateCheckCount('ad_qual_content', 'ad_qual_badge');
+    
+    // Reset requirement buttons
+    document.querySelectorAll('.req-btn').forEach(btn => {
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-outline-secondary');
+    });
+    
+    showToast('🗑 Form cleared!');
+}
+
+// Initialize advertisement form on load
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default last date to a week from now
+    const lastDateField = document.getElementById('ad_last_date');
+    if (lastDateField && !lastDateField.value) {
+        const nextWeek = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+        lastDateField.value = nextWeek.toISOString().split('T')[0];
+    }
+});
+</script>
+<script src="{% static 'generator/theme_toggle.js' %}"></script>
+
+</body>
+</html>
