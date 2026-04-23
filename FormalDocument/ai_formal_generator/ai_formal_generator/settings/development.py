@@ -45,3 +45,6 @@ DATABASES = {
 # --------------------------------------------------
 LOGGING["loggers"]["generator"]["level"] = "DEBUG"  # type: ignore[index]
 
+# Print emails to terminal during local development.
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+

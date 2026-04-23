@@ -94,6 +94,24 @@ DB_PORT=5432
 
 If not set, production falls back to SQLite.
 
+### Email Variables (password reset)
+
+Used by the "Forgot password" flow on the sign-in page.
+
+```env
+DEFAULT_FROM_EMAIL=no-reply@example.com
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.example.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-smtp-user
+EMAIL_HOST_PASSWORD=your-smtp-password
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+```
+
+- **Development:** `settings/development.py` overrides backend to console email backend, so reset emails print in terminal.
+- **Production:** set SMTP values via environment variables.
+
 ---
 
 ## `.env` File Setup
@@ -126,6 +144,7 @@ A template is provided at `.env.example` — copy and fill in values.
 | `DEBUG` | `development.py` / `production.py` | `True` | `False` |
 | `ALLOWED_HOSTS` | `development.py` / `production.py` | `localhost`, `127.0.0.1` | From env var |
 | `DB_*` | `production.py` | N/A (SQLite) | From env vars |
+| `DEFAULT_FROM_EMAIL`, `EMAIL_*` | `base.py` (+ dev override) | Console email in dev | SMTP (from env vars) |
 
 ---
 

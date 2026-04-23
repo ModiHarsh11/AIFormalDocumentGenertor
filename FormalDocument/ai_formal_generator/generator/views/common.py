@@ -217,6 +217,7 @@ def make_docx_response(doc, filename: str) -> HttpResponse:
 # Home view
 # ---------------------------------------------------------------------------
 
+@login_required
 def home(request):
     return render(request, "generator/home.html", {
         "designations": DESIGNATION_MAP.keys(),
